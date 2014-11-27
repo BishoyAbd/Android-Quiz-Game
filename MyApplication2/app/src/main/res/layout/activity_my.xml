@@ -44,7 +44,7 @@
             android:layout_weight="1"
             android:textSize="18sp" />
 
-        <TextView
+        <com.example.orodr_000.myapplication.FontFitTextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceSmall"
@@ -66,7 +66,7 @@
             android:background="@drawable/label_button"
             android:textColor="#ffffff" />
 
-        <TextView
+        <com.example.orodr_000.myapplication.FontFitTextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceSmall"
@@ -87,7 +87,7 @@
             android:background="@drawable/label_button"
             android:textColor="#ffffff" />
 
-        <TextView
+        <com.example.orodr_000.myapplication.FontFitTextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceSmall"
@@ -108,7 +108,7 @@
             android:background="@drawable/label_button"
             android:textColor="#ffffff" />
 
-        <TextView
+        <com.example.orodr_000.myapplication.FontFitTextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceSmall"
