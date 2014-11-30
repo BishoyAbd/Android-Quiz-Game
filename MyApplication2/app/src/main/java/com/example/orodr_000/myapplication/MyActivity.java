@@ -5,6 +5,7 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.res.AssetManager;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -15,13 +16,22 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.android.volley.toolbox.ImageLoader;
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.NetworkImageView;
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
+import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
+import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -31,13 +41,13 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLConnection;
 import java.util.Random;
 
 
 public class MyActivity extends Activity {
+    static ImageLoader imageLoader = ImageLoader.getInstance();
+    int[] randArray;
+    String[] strTextArray = {""};
     private Activity activity;
     private NetworkImageView mNetworkImageView;
     private TextView var1;
@@ -49,16 +59,6 @@ public class MyActivity extends Activity {
     private ProgressBar progress;
     private ImageData imgData1;
     private ImageData imgData2;
-
-    private boolean firstImageIsShown;
-    private boolean secondImageIsShown;
-    private boolean firstImageloaded;
-    private boolean secondImageLoaded;
-
-
-    int[] randArray;
-    String[] strTextArray = {""};
-
     private String strSearchText;
     private String strAnswer;
     private String strTheme;
@@ -67,8 +67,6 @@ public class MyActivity extends Activity {
     private long remainingTime;
     private boolean timerHasStarted = false;
     private int points;
-
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,9 +80,24 @@ public class MyActivity extends Activity {
         var3 = (TextView) findViewById(R.id.textView3);
         var4 = (TextView) findViewById(R.id.textView4);
         pnts = (TextView) findViewById(R.id.points);
-        timer= (TextView) findViewById(R.id.timer);
+        timer = (TextView) findViewById(R.id.timer);
         RelativeLayout layout = (RelativeLayout) findViewById(R.id.rellayout);
-        progress=(ProgressBar)findViewById(R.id.progressBar);
+        progress = (ProgressBar) findViewById(R.id.progressBar);
+
+        DisplayImageOptions defaultOptions =
+                new DisplayImageOptions.Builder()
+                        .cacheInMemory(true)
+                        .showImageOnLoading(R.drawable.loading)
+                        .showImageForEmptyUri(R.drawable.loading)
+                        .showImageOnFail(R.drawable.loading)
+                                //.cacheOnDisc(true)
+                        .displayer(new FadeInBitmapDisplayer(500))
+                        .build();
+        ImageLoaderConfiguration mImageLoaderConfig =
+                new ImageLoaderConfiguration.Builder(getApplicationContext())
+                        .defaultDisplayImageOptions(defaultOptions)
+                        .build();
+        imageLoader.init(mImageLoaderConfig);
 
         long startTime = 71 * 1000;
         try {
@@ -100,8 +113,8 @@ public class MyActivity extends Activity {
         //progress.getProgressDrawable().setColorFilter(Color.GREEN, PorterDuff.Mode.LIGHTEN);
 
         Intent i = getIntent();
-        strTheme=i.getStringExtra("Theme");
-        strFile=i.getStringExtra("File");
+        strTheme = i.getStringExtra("Theme");
+        strFile = i.getStringExtra("File");
 
         try {
             strTextArray = LoadFile();
@@ -111,69 +124,67 @@ public class MyActivity extends Activity {
         points = 0;
         activity = this;
         layout.setBackgroundResource(R.drawable.image);
-        mNetworkImageView = (NetworkImageView) findViewById(R.id.view);
-        firstImageIsShown=false;
-        secondImageIsShown=false;
-        firstImageloaded=false;
-        secondImageLoaded=false;
+
+
         NextImage();
-        new getSecondImageTask().execute();
-        if(!timerHasStarted){
+        new getImageTask().execute();
+        if (!timerHasStarted) {
             countDownTimer.start();
-            timerHasStarted=true;
-        }else{
+            timerHasStarted = true;
+        } else {
             countDownTimer.cancel();
-            timerHasStarted=false;
+            timerHasStarted = false;
         }
 
     }
 
-    public void addTime(long addedTime)
-    {
-        showTimer(remainingTime+addedTime);
+    public void addTime(long addedTime) {
+        showTimer(remainingTime + addedTime);
     }
 
-    public void decreaseTime(long decTime){showTimer(remainingTime-decTime);}
+    public void decreaseTime(long decTime) {
+        showTimer(remainingTime - decTime);
+    }
 
-    public void showTimer(final long millisecondsToCountDown)
-    {
+    public void showTimer(final long millisecondsToCountDown) {
 
-        if(countDownTimer != null) { countDownTimer.cancel(); }
+        if (countDownTimer != null) {
+            countDownTimer.cancel();
+        }
         countDownTimer = new CountDownTimer(millisecondsToCountDown, 1000) {
             @Override
             public void onTick(long millisUntilFinished) {
-                remainingTime=millisUntilFinished;
-                progress.setProgress((int)millisUntilFinished/1000);
-                if(remainingTime<21000){
+                remainingTime = millisUntilFinished;
+                progress.setProgress((int) millisUntilFinished / 1000);
+                if (remainingTime < 21000) {
                     timer.setTextColor(Color.RED);
                     //progress.getProgressDrawable().setColorFilter(Color.RED, PorterDuff.Mode.MULTIPLY);
-                }
-                else
-                {
+                } else {
                     //progress.getProgressDrawable().setColorFilter(Color.GREEN, PorterDuff.Mode.MULTIPLY);
                     timer.setTextColor(Color.BLACK);
                 }
-                timer.setText(String.valueOf(millisUntilFinished/1000));
+                timer.setText(String.valueOf(millisUntilFinished / 1000));
             }
 
             @Override
             public void onFinish() {
-               /* Toast toast = Toast.makeText(getApplicationContext(), "GAME OVER", Toast.LENGTH_LONG);
+                Toast toast = Toast.makeText(getApplicationContext(), "GAME OVER", Toast.LENGTH_LONG);
                 TextView t = (TextView) toast.getView().findViewById(android.R.id.message);
                 t.setTextColor(Color.RED);
                 toast.show();
-                activity.finish();*/
+                activity.finish();
             }
-       }.start();
+        }.start();
 
     }
-    public void timerPause(){
+
+    public void timerPause() {
 
         countDownTimer.cancel();
     }
 
 
-    public void timerResume(){
+    public void timerResume() {
         showTimer(remainingTime);
     }
 
@@ -192,7 +203,7 @@ public class MyActivity extends Activity {
     public String[] LoadFile() throws IOException {
         AssetManager am = getAssets();
         am.list("");
-        InputStream is = am.open(strFile+".txt");
+        InputStream is = am.open(strFile + ".txt");
 
         BufferedReader br = new BufferedReader(new InputStreamReader(is));
         String line;
@@ -224,10 +235,6 @@ public class MyActivity extends Activity {
     }
 
 
-
-
-
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
 
@@ -245,7 +252,7 @@ public class MyActivity extends Activity {
     public void buttonClick(View v) {
         NextImage();
 
-        new getSecondImageTask().execute();
+        new getImageTask().execute();
 
     }
 
@@ -261,12 +268,13 @@ public class MyActivity extends Activity {
         int randInt = new Random().nextInt(randArray.length);
         strSearchText = strTextArray[randArray[randInt]];
         strAnswer = strSearchText;
-        String fileName =strTheme;
+        String fileName = strTheme;
         strSearchText = fileName + " " + strSearchText;
         strSearchText = Uri.encode(strSearchText);
         System.out.println("Search string =>" + strSearchText);
 
     }
+
     /*private static String removeLastChar(String str) {
         return str.substring(0,str.length()-1);
     }*/
@@ -285,18 +293,16 @@ public class MyActivity extends Activity {
                     points += 500;
                 }
             }
-
         }
 
-        if(remainingTime>65000){
-            addTime(71000-remainingTime);
-        }else
-        {
+        if (remainingTime > 65000) {
+            addTime(70000 - remainingTime);
+        } else {
             addTime(5000);
         }
     }
 
-    public void DecreasePoints(){
+    public void DecreasePoints() {
         if (points < 1000) {
             points -= 50;
         } else {
@@ -307,7 +313,6 @@ public class MyActivity extends Activity {
                     points -= 350;
                 }
             }
-
         }
         decreaseTime(3000);
     }
@@ -315,12 +320,9 @@ public class MyActivity extends Activity {
     public void AnswerClick(View v) {
         TextView tv = (TextView) v;
         String answ;
-        if(firstImageIsShown){
-            answ=imgData1.getStrAnswer();
-        }
-        else {
-            answ=imgData2.getStrAnswer();
-        }
+
+        answ = strAnswer;
+
         if (CheckAnswer(tv.getText().toString(), answ)) {
 
             AddPoints();
@@ -339,7 +341,7 @@ public class MyActivity extends Activity {
         pnts.setText(String.valueOf(points));
         NextImage();
         //new getImageTask().execute();
-        new getSecondImageTask().execute();
+        new getImageTask().execute();
         /*AlertDialog alertDialog = new AlertDialog.Builder(
                 MyActivity.this).create();
 
@@ -365,7 +367,7 @@ public class MyActivity extends Activity {
     }
 
     public class getImageTask extends AsyncTask<Void, Void, Void> {
-        JSONObject json;
+        JSONArray json;
         ProgressDialog dialog;
 
         @Override
@@ -380,35 +382,39 @@ public class MyActivity extends Activity {
         protected Void doInBackground(Void... params) {
             // TODO Auto-generated method stub
 
-            URL url;
-            try {
-                url = new URL("https://ajax.googleapis.com/ajax/services/search/images?" +
-                        "v=1.0&q=" + strSearchText + "&rsz=8&imgtype=photo");
+            String url;
 
-                URLConnection connection = url.openConnection();
+            url = "https://ajax.googleapis.com/ajax/services/search/images?" +
+                    "v=1.0&q=" + strSearchText + "&rsz=8&imgtype=photo&imgsz=medium";
 
-                connection.addRequestProperty("Referer", "http://www.google.com");
+            final JsonObjectRequest jsonObjReq = new JsonObjectRequest(Request.Method.GET,
+                    url, null,
+                    new Response.Listener<JSONObject>() {
 
-                String line;
-                StringBuilder builder = new StringBuilder();
-                BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-                while ((line = reader.readLine()) != null) {
-                    builder.append(line);
+                        @Override
+                        public void onResponse(JSONObject response) {
+
+                            try {
+                                JSONObject jObject = response.getJSONObject("responseData");
+                                JSONArray jsonArray = jObject.getJSONArray("results");
+                                showImage(jsonArray);
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+
+                        }
+                    }, new Response.ErrorListener() {
+
+                @Override
+                public void onErrorResponse(VolleyError error) {
+
                 }
+            });
+            MySingleton.getInstance(activity).addToRequestQueue(jsonObjReq);
 
-                System.out.println("Builder string => " + builder.toString());
 
-                json = new JSONObject(builder.toString());
-            } catch (MalformedURLException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            } catch (IOException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            } catch (JSONException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
+
+
             return null;
         }
 
@@ -420,272 +426,30 @@ public class MyActivity extends Activity {
             /*if (dialog.isShowing()) {
                 dialog.dismiss();
             }*/
-            if(countDownTimer==null){
-                timerResume();
-            }
 
-            try {
-                JSONObject responseObject = json.getJSONObject("responseData");
-                JSONArray resultArray = responseObject.getJSONArray("results");
-                String mImage_url = getImage(resultArray);
-                ImageLoader mImageLoader = MySingleton.getInstance(activity).getImageLoader();
-                mNetworkImageView.setImageUrl(mImage_url, mImageLoader);
-                var1.setText(String.valueOf(strTextArray[randArray[0]]));
-                var2.setText(String.valueOf(strTextArray[randArray[1]]));
-                var3.setText(String.valueOf(strTextArray[randArray[2]]));
-                var4.setText(String.valueOf(strTextArray[randArray[3]]));
-               } catch (JSONException e) {
-                // TODO Auto-generated catch block
-
-                timerPause();
-                NextImage();
-                new getImageTask().execute();
-                e.printStackTrace();
-            }
         }
     }
-
-    public class getSecondImageTask extends AsyncTask<Void, Void, Void> {
-
-        JSONObject json;
-        JSONObject json2;
-        ProgressDialog dialog;
-
-        @Override
-        protected void onPreExecute() {
-            // TODO Auto-generated method stub
-            super.onPreExecute();
-            //dialog = ProgressDialog.show(MyActivity.this, "", "Please wait...");
+    public void showImage(JSONArray json){
+        if (countDownTimer == null) {
+            timerResume();
         }
 
-        @Override
-        protected Void doInBackground(Void... params) {
-            // TODO Auto-generated method stub
+        String mImage_url = getImage(json);
+        ImageView image = (ImageView) findViewById(R.id.view);
 
-                URL url;
-            if(!firstImageloaded && !secondImageLoaded) {
-                try {
-                    url = new URL("https://ajax.googleapis.com/ajax/services/search/images?" +
-                            "v=1.0&q=" + strSearchText + "&rsz=8&imgtype=photo");
+        imageLoader.displayImage(mImage_url, image, new
+                SimpleImageLoadingListener() {
 
-                    URLConnection connection = url.openConnection();
+                    @Override
+                    public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
 
-                    connection.addRequestProperty("Referer", "http://www.google.com");
-
-                    String line;
-                    StringBuilder builder = new StringBuilder();
-                    BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-                    while ((line = reader.readLine()) != null) {
-                        builder.append(line);
                     }
-
-                    System.out.println("Builder string => " + builder.toString());
-                    System.out.println("First Time 1 Image Load");
-
-                    json = new JSONObject(builder.toString());
-                    imgData1 = new ImageData(json, strAnswer, strSearchText, strTextArray,randArray);
-                } catch (MalformedURLException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                } catch (IOException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                } catch (JSONException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
-                NextImage();
-                try {
-                    url = new URL("https://ajax.googleapis.com/ajax/services/search/images?" +
-                            "v=1.0&q=" + strSearchText + "&rsz=8&imgtype=photo");
-
-                    URLConnection connection = url.openConnection();
-
-                    connection.addRequestProperty("Referer", "http://www.google.com");
-
-                    String line;
-                    StringBuilder builder = new StringBuilder();
-                    BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-                    while ((line = reader.readLine()) != null) {
-                        builder.append(line);
-                    }
-
-                    System.out.println("Builder string => " + builder.toString());
-                    System.out.println("First Time 2 Image Load");
-
-                    json2 = new JSONObject(builder.toString());
-                    imgData2 = new ImageData(json2, strAnswer, strSearchText, strTextArray,randArray);
-                } catch (MalformedURLException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                } catch (IOException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                } catch (JSONException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
-            }
-            if(firstImageIsShown && firstImageloaded){
-                try {
-                    url = new URL("https://ajax.googleapis.com/ajax/services/search/images?" +
-                            "v=1.0&q=" + strSearchText + "&rsz=8&imgtype=photo");
-
-                    URLConnection connection = url.openConnection();
-
-                    connection.addRequestProperty("Referer", "http://www.google.com");
-
-                    String line;
-                    StringBuilder builder = new StringBuilder();
-                    BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-                    while ((line = reader.readLine()) != null) {
-                        builder.append(line);
-                    }
-
-                    System.out.println("Builder string => " + builder.toString());
-                    System.out.println("Another 1 Image Load");
-                    json = new JSONObject(builder.toString());
-                    imgData1 = new ImageData(json, strAnswer, strSearchText, strTextArray,randArray);
-                } catch (MalformedURLException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                } catch (IOException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                } catch (JSONException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
-            }
-            if(secondImageIsShown && secondImageLoaded){
-                try {
-                    url = new URL("https://ajax.googleapis.com/ajax/services/search/images?" +
-                            "v=1.0&q=" + strSearchText + "&rsz=8&imgtype=photo");
-
-                    URLConnection connection = url.openConnection();
-
-                    connection.addRequestProperty("Referer", "http://www.google.com");
-
-                    String line;
-                    StringBuilder builder = new StringBuilder();
-                    BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-                    while ((line = reader.readLine()) != null) {
-                        builder.append(line);
-                    }
-
-                    System.out.println("Builder string => " + builder.toString());
-                    System.out.println("Another 2 Image Load");
-
-                    json2 = new JSONObject(builder.toString());
-                    imgData2 = new ImageData(json, strAnswer, strSearchText, strTextArray,randArray);
-                } catch (MalformedURLException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                } catch (IOException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                } catch (JSONException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
-            }
-
-            return null;
-
-        }
-
-        @Override
-        protected void onPostExecute(Void result) {
-            // TODO Auto-generated method stub
-            super.onPostExecute(result);
-
-            /*if (dialog.isShowing()) {
-                dialog.dismiss();
-            }*/
-            if(firstImageloaded && firstImageIsShown){
-                secondImageIsShown=true;
-                firstImageIsShown=false;
-                if (countDownTimer == null) {
-                    timerResume();
-                }
-
-                try {
-                    System.out.println("2 Image Show");
-                    JSONObject responseObject = imgData2.getJson().getJSONObject("responseData");
-                    JSONArray resultArray = responseObject.getJSONArray("results");
-                    String mImage_url = getImage(resultArray);
-                    ImageLoader mImageLoader = MySingleton.getInstance(activity).getImageLoader();
-                    mNetworkImageView.setImageUrl(mImage_url, mImageLoader);
-                    var1.setText(String.valueOf(imgData2.getStrTextArray()[imgData2.getRandArray()[0]]));
-                    var2.setText(String.valueOf(imgData2.getStrTextArray()[imgData2.getRandArray()[1]]));
-                    var3.setText(String.valueOf(imgData2.getStrTextArray()[imgData2.getRandArray()[2]]));
-                    var4.setText(String.valueOf(imgData2.getStrTextArray()[imgData2.getRandArray()[3]]));
-                } catch (JSONException e) {
-                    // TODO Auto-generated catch block
-
-                    timerPause();
-                    NextImage();
-                    new getSecondImageTask().execute();
-                    e.printStackTrace();
-                }
-            }
-            if (!firstImageloaded && !secondImageLoaded) {
-                firstImageloaded=true;
-                secondImageLoaded=true;
-                firstImageIsShown=true;
-                secondImageIsShown=false;
-                if (countDownTimer == null) {
-                    timerResume();
-                }
-
-                try {
-                    System.out.println("First Time 1 Image Show");
-                    JSONObject responseObject = imgData1.getJson().getJSONObject("responseData");
-                    JSONArray resultArray = responseObject.getJSONArray("results");
-                    String mImage_url = getImage(resultArray);
-                    ImageLoader mImageLoader = MySingleton.getInstance(activity).getImageLoader();
-                    mNetworkImageView.setImageUrl(mImage_url, mImageLoader);
-                    var1.setText(String.valueOf(imgData1.getStrTextArray()[imgData1.getRandArray()[0]]));
-                    var2.setText(String.valueOf(imgData1.getStrTextArray()[imgData1.getRandArray()[1]]));
-                    var3.setText(String.valueOf(imgData1.getStrTextArray()[imgData1.getRandArray()[2]]));
-                    var4.setText(String.valueOf(imgData1.getStrTextArray()[imgData1.getRandArray()[3]]));
-                } catch (JSONException e) {
-                    // TODO Auto-generated catch block
-
-                    timerPause();
-                    NextImage();
-                    new getSecondImageTask().execute();
-                    e.printStackTrace();
-                }
-            }
-
-            if(secondImageIsShown && secondImageLoaded ){
-                secondImageIsShown=false;
-                firstImageIsShown=true;
-                if (countDownTimer == null) {
-                    timerResume();
-                }
-
-                try {
-                    System.out.println("1 Image Show");
-                    JSONObject responseObject = imgData1.getJson().getJSONObject("responseData");
-                    JSONArray resultArray = responseObject.getJSONArray("results");
-                    String mImage_url = getImage(resultArray);
-                    ImageLoader mImageLoader = MySingleton.getInstance(activity).getImageLoader();
-                    mNetworkImageView.setImageUrl(mImage_url, mImageLoader);
-                    var1.setText(String.valueOf(imgData1.getStrTextArray()[imgData1.getRandArray()[0]]));
-                    var2.setText(String.valueOf(imgData1.getStrTextArray()[imgData1.getRandArray()[1]]));
-                    var3.setText(String.valueOf(imgData1.getStrTextArray()[imgData1.getRandArray()[2]]));
-                    var4.setText(String.valueOf(imgData1.getStrTextArray()[imgData1.getRandArray()[3]]));
-                } catch (JSONException e) {
-                    // TODO Auto-generated catch block
-
-                    timerPause();
-                    NextImage();
-                    new getSecondImageTask().execute();
-                    e.printStackTrace();
-                }
-            }
-        }
+                });
+        var1.setText(String.valueOf(strTextArray[randArray[0]]));
+        var2.setText(String.valueOf(strTextArray[randArray[1]]));
+        var3.setText(String.valueOf(strTextArray[randArray[2]]));
+        var4.setText(String.valueOf(strTextArray[randArray[3]]));
     }
+
+
 }
