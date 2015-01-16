@@ -48,10 +48,6 @@ import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.GlideDrawableImageViewTarget;
 import com.getbase.floatingactionbutton.FloatingActionButton;
-import com.nostra13.universalimageloader.core.DisplayImageOptions;
-import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
-import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -67,7 +63,7 @@ import static android.graphics.Paint.ANTI_ALIAS_FLAG;
 
 
 public class ButtonActivity extends Activity {
-    static ImageLoader imageLoader = ImageLoader.getInstance();
+    //static ImageLoader imageLoader = ImageLoader.getInstance();
     int[] randArray;
     String[] strTextArray = {""};
     private Activity activity;
@@ -93,7 +89,6 @@ public class ButtonActivity extends Activity {
     public TickPlusDrawable tickPlusDrawable;
     public boolean gameStart=false;
     private View animView;
-    private View backgroundView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -108,7 +103,7 @@ public class ButtonActivity extends Activity {
         setContentView(R.layout.activity_button);
 
         animView = findViewById(R.id.animView);
-        backgroundView=findViewById(R.id.animView1);
+        View backgroundView = findViewById(R.id.animView1);
         tickPlusDrawable = new TickPlusDrawable(getResources().getDimensionPixelSize(R.dimen.stroke_width),  Color.parseColor("#37474F"),Color.parseColor("#FF5722"),Color.parseColor("#4CAF50"));
         animView.setBackground(tickPlusDrawable);
         backgroundView.setBackground(new TickBackgroundDrawable(Color.parseColor("#37474F")));
@@ -128,7 +123,7 @@ public class ButtonActivity extends Activity {
         pnts = (TextView) findViewById(R.id.activity_my_points_tv);
         progress = (ProgressBar) findViewById(R.id.progressBar);
 
-        DisplayImageOptions defaultOptions =
+        /*DisplayImageOptions defaultOptions =
                 new DisplayImageOptions.Builder()
                         .cacheInMemory(true)
                                 //.showImageOnLoading(R.drawable.loading)
@@ -141,7 +136,7 @@ public class ButtonActivity extends Activity {
                 new ImageLoaderConfiguration.Builder(getApplicationContext())
                         .defaultDisplayImageOptions(defaultOptions)
                         .build();
-        imageLoader.init(mImageLoaderConfig);
+        imageLoader.init(mImageLoaderConfig);*/
 
         long startTime = 71 * 1000;
         try {
@@ -319,8 +314,30 @@ public class ButtonActivity extends Activity {
         mImage_url = savedInstanceState.getString("Url");
         points= Integer.valueOf(pnts.getText().toString());
         //aq.id(R.id.view).image(mImage_url, true, true, 0, R.drawable.loading,null,AQuery.FADE_IN);
-        ImageView image =(ImageView)findViewById(R.id.view);
-        imageLoader.displayImage(mImage_url, image);
+        final ImageView image =(ImageView)findViewById(R.id.view);
+        //imageLoader.displayImage(mImage_url, image);
+        Animation anim1 = AnimationUtils.loadAnimation(this, android.R.anim.fade_in);
+
+        Glide.with(this).load(mImage_url).animate(anim1).fitCenter().into(new GlideDrawableImageViewTarget(image) {
+            AnimationDrawable imageAnimation;
+            @Override
+            public void onResourceReady(GlideDrawable drawable, GlideAnimation anim) {
+                super.onResourceReady(drawable, anim);
+
+                imageAnimation.stop();
+                image.setBackground(null);
+            }
+
+            @Override
+            public void onLoadStarted(Drawable placeholder) {
+                super.onLoadStarted(placeholder);
+                image.setBackgroundResource(R.drawable.imageanim);
+
+                imageAnimation=(AnimationDrawable) image.getBackground();
+                imageAnimation.start();
+            }
+
+        });
         try {
             showTimer(remainingTime);
         } catch (NumberFormatException e) {
@@ -700,7 +717,6 @@ public class ButtonActivity extends Activity {
         private float[] mPoints = new float[8];
         private final RectF mBounds = new RectF();
 
-        private boolean mTickMode;
         private ArgbEvaluator mArgbEvaluator = new ArgbEvaluator();
 
         private float mRotation;
@@ -744,16 +760,6 @@ public class ButtonActivity extends Activity {
             setupPauseMode();
         }
 
-        private void setupPlusMode() {
-            mPoints[0] = mBounds.left;
-            mPoints[1] = mBounds.centerY();
-            mPoints[2] = mBounds.right;
-            mPoints[3] = mBounds.centerY();
-            mPoints[4] = mBounds.centerX();
-            mPoints[5] = mBounds.top;
-            mPoints[6] = mBounds.centerX();
-            mPoints[7] = mBounds.bottom;
-        }
         private void setupPauseMode() {
             mPoints[0] = mBounds.centerX()-mBounds.centerX()/4;
             mPoints[1] = mBounds.top;
@@ -796,20 +802,11 @@ public class ButtonActivity extends Activity {
             canvas.restore();
         }
 
-        public void toggle() {
-            if(mTickMode) {
-                animatePlus();
-            } else {
-                animateCross();
-            }
-            mTickMode = !mTickMode;
-        }
-
         public void animateTick() {
             AnimatorSet set = new AnimatorSet();
             int cx;
             int cy;
-            cx=0;
+            cx=animView.getWidth()/2;
             cy=0;
             int initialRadius =  Math.max(animView.getWidth(), animView.getHeight())*2;
 
@@ -852,7 +849,7 @@ public class ButtonActivity extends Activity {
             AnimatorSet set = new AnimatorSet();
             int cx;
             int cy;
-            cx=0;
+            cx=animView.getWidth()/2;
             cy=0;
             int initialRadius =  Math.max(animView.getWidth(), animView.getHeight())*2;
 
@@ -890,36 +887,11 @@ public class ButtonActivity extends Activity {
             set.start();
         }
 
-        public void animatePlus() {
-            AnimatorSet set = new AnimatorSet();
-            set.playTogether(
-                    ObjectAnimator.ofFloat(this, mPropertyPointAX, mBounds.left),
-                    ObjectAnimator.ofFloat(this, mPropertyPointAY, mBounds.centerY()),
-
-                    ObjectAnimator.ofFloat(this, mPropertyPointBX, mBounds.right),
-                    ObjectAnimator.ofFloat(this, mPropertyPointBY, mBounds.centerY()),
-
-                    ObjectAnimator.ofFloat(this, mPropertyPointCX, mBounds.centerX()),
-                    ObjectAnimator.ofFloat(this, mPropertyPointCY, mBounds.top),
-
-                    ObjectAnimator.ofFloat(this, mPropertyPointDX, mBounds.centerX()),
-                    ObjectAnimator.ofFloat(this, mPropertyPointDY, mBounds.bottom),
-
-                    ObjectAnimator.ofFloat(this, mRotationProperty, 0f, 1f),
-                    ObjectAnimator.ofObject(this, mLineColorProperty, mArgbEvaluator, Color.parseColor("#3F51B5")),
-                    ObjectAnimator.ofObject(this, mBackgroundColorProperty, mArgbEvaluator, mTickColor)
-            );
-            set.setDuration(ANIMATION_DURATION);
-            set.setStartDelay(500);
-            set.setInterpolator(ANIMATION_INTERPOLATOR);
-            set.start();
-        }
-
         public void animatePause() {
             AnimatorSet set = new AnimatorSet();
             int cx;
             int cy;
-            cx=animView.getWidth();
+            cx=animView.getWidth()/2;
             cy=animView.getHeight();
             int initialRadius =  Math.max(animView.getWidth(), animView.getHeight())*2;
 
