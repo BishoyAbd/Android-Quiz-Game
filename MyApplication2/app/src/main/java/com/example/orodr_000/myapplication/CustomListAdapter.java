@@ -66,7 +66,7 @@ public class CustomListAdapter extends BaseAdapter {
          * @param v  The clicked view.
          */
         public abstract void onClick(View v, ViewHolder viewHolder);
-    };
+    }
 
     @Override
     public View getView(int position,View convertView,ViewGroup parent){
@@ -77,7 +77,7 @@ public class CustomListAdapter extends BaseAdapter {
             ViewHolder viewHolder=new ViewHolder();
             viewHolder.title=(TextView)rowView.findViewById(R.id.quiz_title);
             viewHolder.image=(ImageView)rowView.findViewById(R.id.quiz_image);
-            viewHolder.points=(TextView)rowView.findViewById(R.id.quiz_points);
+            viewHolder.points=(TextView)rowView.findViewById(R.id.activity_my_variant2_tv);
             rowView.setTag(viewHolder);
         }
         Quiz_Button b=items.get(position);

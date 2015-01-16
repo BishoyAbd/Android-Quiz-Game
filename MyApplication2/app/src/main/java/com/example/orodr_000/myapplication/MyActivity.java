@@ -1,21 +1,39 @@
 package com.example.orodr_000.myapplication;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.AnimatorSet;
+import android.animation.ArgbEvaluator;
+import android.animation.ObjectAnimator;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.res.AssetManager;
+import android.content.res.Configuration;
 import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.ColorFilter;
+import android.graphics.Paint;
+import android.graphics.PixelFormat;
+import android.graphics.PorterDuff;
+import android.graphics.Rect;
+import android.graphics.RectF;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.util.Property;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.animation.DecelerateInterpolator;
+import android.view.animation.Interpolator;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
@@ -26,7 +44,6 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.NetworkImageView;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
@@ -43,13 +60,15 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Random;
 
+import static android.graphics.Paint.ANTI_ALIAS_FLAG;
+
 
 public class MyActivity extends Activity {
     static ImageLoader imageLoader = ImageLoader.getInstance();
     int[] randArray;
     String[] strTextArray = {""};
     private Activity activity;
-    private NetworkImageView mNetworkImageView;
+
     private TextView var1;
     private TextView var2;
     private TextView var3;
@@ -57,8 +76,6 @@ public class MyActivity extends Activity {
     private TextView timer;
     private TextView pnts;
     private ProgressBar progress;
-    private ImageData imgData1;
-    private ImageData imgData2;
     private String strSearchText;
     private String strAnswer;
     private String strTheme;
@@ -68,19 +85,38 @@ public class MyActivity extends Activity {
     private boolean timerHasStarted = false;
     private int points;
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
-        this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        setContentView(R.layout.activity_my);
-        var1 = (TextView) findViewById(R.id.activity_my_variant1_tv);
-        var2 = (TextView) findViewById(R.id.quiz_points);
-        var3 = (TextView) findViewById(R.id.textView3);
-        var4 = (TextView) findViewById(R.id.textView4);
-        pnts = (TextView) findViewById(R.id.points);
-        timer = (TextView) findViewById(R.id.timer);
+        getWindow().requestFeature(Window.FEATURE_ACTION_BAR);
+        getActionBar().hide();
+        //setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+
+        setContentView(R.layout.activity_button);
+        /*var1 = (TextView) findViewById(R.id.activity_my_variant1_tv);
+        var2 = (TextView) findViewById(R.id.activity_my_variant2_tv);
+        var3 = (TextView) findViewById(R.id.activity_my_variant3_tv);
+        var4 = (TextView) findViewById(R.id.activity_my_variant4_tv);*/
+        var1 = (TextView) findViewById(R.id.activity_my_variant1_btn);
+        var2 = (TextView) findViewById(R.id.activity_my_variant2_btn);
+        var3 = (TextView) findViewById(R.id.activity_my_variant3_btn);
+        var4 = (TextView) findViewById(R.id.activity_my_variant4_btn);
+        pnts = (TextView) findViewById(R.id.activity_my_points_tv);
+        timer = (TextView) findViewById(R.id.activity_my_timer_tv);
         RelativeLayout layout = (RelativeLayout) findViewById(R.id.rellayout);
         progress = (ProgressBar) findViewById(R.id.progressBar);
 
@@ -110,7 +146,7 @@ public class MyActivity extends Activity {
         progress.setMax(70);
         progress.setProgress(70);
         progress.setRotation(180);
-        //progress.getProgressDrawable().setColorFilter(Color.GREEN, PorterDuff.Mode.LIGHTEN);
+        progress.getProgressDrawable().setColorFilter(Color.GREEN, PorterDuff.Mode.SRC_ATOP);
 
         Intent i = getIntent();
         strTheme = i.getStringExtra("Theme");
@@ -123,7 +159,7 @@ public class MyActivity extends Activity {
         }
         points = 0;
         activity = this;
-        layout.setBackgroundResource(R.drawable.image);
+        //layout.setBackgroundResource(R.drawable.image);
 
 
         NextImage();
@@ -158,9 +194,9 @@ public class MyActivity extends Activity {
                 progress.setProgress((int) millisUntilFinished / 1000);
                 if (remainingTime < 21000) {
                     timer.setTextColor(Color.RED);
-                    //progress.getProgressDrawable().setColorFilter(Color.RED, PorterDuff.Mode.MULTIPLY);
+                    progress.getProgressDrawable().setColorFilter(Color.RED, PorterDuff.Mode.SRC_IN);
                 } else {
-                    //progress.getProgressDrawable().setColorFilter(Color.GREEN, PorterDuff.Mode.MULTIPLY);
+                    progress.getProgressDrawable().setColorFilter(Color.GREEN, PorterDuff.Mode.SRC_IN);
                     timer.setTextColor(Color.BLACK);
                 }
                 timer.setText(String.valueOf(millisUntilFinished / 1000));
@@ -318,12 +354,13 @@ public class MyActivity extends Activity {
     }
 
     public void AnswerClick(View v) {
-        TextView tv = (TextView) v;
+        //TextView tv = (TextView) v;
+        Button btn=(Button) v;
         String answ;
 
         answ = strAnswer;
 
-        if (CheckAnswer(tv.getText().toString(), answ)) {
+        if (CheckAnswer(btn.getText().toString(), answ)) {
 
             AddPoints();
             Toast toast = Toast.makeText(getApplicationContext(), "Right Answer", Toast.LENGTH_SHORT);
@@ -367,7 +404,6 @@ public class MyActivity extends Activity {
     }
 
     public class getImageTask extends AsyncTask<Void, Void, Void> {
-        JSONArray json;
         ProgressDialog dialog;
 
         @Override
@@ -385,7 +421,7 @@ public class MyActivity extends Activity {
             String url;
 
             url = "https://ajax.googleapis.com/ajax/services/search/images?" +
-                    "v=1.0&q=" + strSearchText + "&rsz=8&imgtype=photo&imgsz=medium";
+                    "v=1.0&q=" + strSearchText + "&rsz=8&imgsz=large";
 
             final JsonObjectRequest jsonObjReq = new JsonObjectRequest(Request.Method.GET,
                     url, null,

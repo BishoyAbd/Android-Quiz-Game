@@ -1,1 +1,1 @@
-capitals,dc_logo,marvel_logo,movies
+capitals,dc_logo,marvel_logo,movies,flags,games

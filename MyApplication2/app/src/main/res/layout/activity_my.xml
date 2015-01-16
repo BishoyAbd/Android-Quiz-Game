@@ -38,10 +38,11 @@
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:text="0"
-            android:id="@+id/points"
-            android:gravity="center"
+            android:id="@+id/activity_my_points_tv"
             android:layout_weight="1"
-            android:textSize="18sp" />
+            android:textSize="18sp"
+            android:layout_marginTop="5dp"
+            android:gravity="center" />
 
         <com.example.orodr_000.myapplication.FontFitTextView
             android:layout_width="match_parent"
@@ -49,7 +50,7 @@
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:id="@+id/activity_my_variant1_tv"
             android:layout_alignEnd="@+id/button"
-            android:layout_marginTop="20dp"
+            android:layout_marginTop="15dp"
             android:layout_alignParentTop="true"
             android:layout_alignParentRight="true"
             android:onClick="AnswerClick"
@@ -62,15 +63,17 @@
             android:layout_weight="1"
             android:textSize="16sp"
             android:layout_marginRight="10dp"
-            android:background="@drawable/label_button"
-            android:textColor="#ffffff" />
 
+            android:textColor="#ffffff"
+
+            />
+        <!--android:background="@drawable/label_button"-->
         <com.example.orodr_000.myapplication.FontFitTextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceSmall"
-            android:id="@+id/quiz_points"
-            android:layout_below="@+id/quiz_points"
+            android:id="@+id/activity_my_variant2_tv"
+            android:layout_below="@+id/activity_my_variant2_tv"
             android:layout_alignParentRight="true"
             android:layout_alignParentEnd="true"
             android:onClick="AnswerClick"
@@ -90,9 +93,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceSmall"
-            android:id="@+id/textView3"
+            android:id="@+id/activity_my_variant3_tv"
             android:onClick="AnswerClick"
-            android:layout_below="@+id/textView3"
+            android:layout_below="@+id/activity_my_variant3_tv"
             android:layout_alignParentRight="true"
             android:layout_alignParentEnd="true"
             android:clickable="true"
@@ -111,7 +114,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceSmall"
-            android:id="@+id/textView4"
+            android:id="@+id/activity_my_variant4_tv"
             android:layout_below="@+id/activity_my_variant1_tv"
             android:layout_alignParentRight="true"
             android:layout_alignParentEnd="true"
@@ -132,7 +135,7 @@
     <ProgressBar
         style="@android:style/Widget.DeviceDefault.Light.ProgressBar.Horizontal"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="30dp"
         android:id="@+id/progressBar"
         android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
@@ -141,22 +144,23 @@
         android:max="70"
         android:progress="70"
         android:layout_toLeftOf="@+id/linlayout"
-        android:progressDrawable="@drawable/progressbar2"
+
         android:layout_marginBottom="5dp"
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp" />
-
+<!--android:progressDrawable="@drawable/progressbar2"-->
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceSmall"
         android:text="70"
-        android:id="@+id/timer"
+        android:id="@+id/activity_my_timer_tv"
         android:layout_gravity="bottom"
         android:gravity="center"
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
         android:layout_alignLeft="@+id/linlayout"
-        android:textSize="18sp" />
+        android:textSize="18sp"
+        android:layout_marginBottom="5dp" />
 
 </RelativeLayout>

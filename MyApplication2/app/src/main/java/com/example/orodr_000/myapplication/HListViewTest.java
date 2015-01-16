@@ -1,6 +1,7 @@
 package com.example.orodr_000.myapplication;
 
 import android.app.Activity;
+import android.app.ActivityOptions;
 import android.content.Intent;
 import android.content.res.AssetManager;
 import android.os.Bundle;
@@ -10,6 +11,7 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.AdapterView;
+import android.widget.GridView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -25,26 +27,25 @@ import java.util.List;
 
 public class HListViewTest extends Activity {
 
-    private static final String TAG =HListViewTest.class.getSimpleName();
+    //private static final String TAG =HListViewTest.class.getSimpleName();
 
-    private static final String url="C:/Users/orodr_000/Desktop/test.json";
     private List<Quiz_Button> buttonList=new ArrayList<Quiz_Button>();
-    private TwoWayView listView;
-    private CustomListAdapter adapter;
     private String[] title;
     private String[] theme;
     private String[] image;
+    private Activity activity;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         //setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
-        this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        //requestWindowFeature(Window.FEATURE_NO_TITLE);
+        //this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_hlist_view_test);
-
-        listView=(TwoWayView) findViewById(R.id.list);
-        listView.setItemMargin(10);
+        activity=this;
+        //TwoWayView listView = (TwoWayView) findViewById(R.id.list);
+        GridView listView=(GridView)findViewById(R.id.list);
+        //listView.setItemMargin(10);
         try {
             title=LoadFile("text_title.txt");
             theme=LoadFile("text_theme.txt");
@@ -59,7 +60,7 @@ public class HListViewTest extends Activity {
             b.setThumbnailUrl(image[i]);
             buttonList.add(b);
         }
-        adapter=new CustomListAdapter(this,buttonList);
+        CustomListAdapter adapter = new CustomListAdapter(this, buttonList);
         listView.setAdapter(adapter);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
@@ -69,13 +70,13 @@ public class HListViewTest extends Activity {
 
                 // We know the View is a <extView so we can cast it
                 RelativeLayout clickedView = (RelativeLayout) view;
-                Intent intent = new Intent(HListViewTest.this, MyActivity.class);
-                TextView fileview=(TextView)clickedView.findViewById(R.id.quiz_title);
+                Intent intent = new Intent(HListViewTest.this, ButtonActivity.class);
+                TextView fileview = (TextView) clickedView.findViewById(R.id.quiz_title);
                 String file = fileview.getText().toString();
-                String theme=fileview.getHint().toString();
+                String theme = fileview.getHint().toString();
                 intent.putExtra("Theme", theme);
-                intent.putExtra("File",file);
-                startActivity(intent);
+                intent.putExtra("File", file);
+                startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(activity).toBundle());
 
 
             }

@@ -1,1 +1,1 @@
-Capital,DC Character,Marvel Character,Movie stills
+Capital,DC Character,Marvel Character,Movie screenshot,Flag,Game Screenshot

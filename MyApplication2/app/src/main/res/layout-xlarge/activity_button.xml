@@ -1,0 +1,124 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingLeft="@dimen/new_activity_horizontal_margin"
+    android:paddingRight="@dimen/new_activity_horizontal_margin"
+    android:paddingTop="@dimen/new_activity_vertical_margin"
+    android:paddingBottom="@dimen/new_activity_vertical_margin"
+    android:id="@+id/rellayout"
+    tools:context=".MyActivity">
+
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/view"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentBottom="false"
+        android:onClick="buttonClick"
+        android:layout_above="@+id/progressBar"
+        android:layout_margin="10dp"
+        android:layout_alignParentRight="true" />
+
+    <ProgressBar
+
+        style="@android:style/Widget.Material.Light.ProgressBar.Horizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/progressBar"
+        android:layout_alignParentBottom="false"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:max="70"
+        android:progress="70"
+
+        android:layout_marginBottom="5dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_alignParentRight="false"
+        android:layout_toLeftOf="@+id/activity_my_timer_tv"
+        android:layout_above="@+id/activity_my_points_tv" />
+    <!--style="@android:style/Widget.DeviceDefault.Light.ProgressBar.Horizontal"-->
+<!--android:progressDrawable="@drawable/progressbar2"-->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="70"
+        android:id="@+id/activity_my_timer_tv"
+        android:layout_gravity="bottom"
+        android:gravity="center"
+        android:layout_alignParentBottom="false"
+        android:layout_alignParentRight="true"
+        android:textSize="18sp"
+        android:layout_marginRight="5dp"
+        android:layout_alignTop="@+id/progressBar"
+        style="@android:style/TextAppearance.Material.Widget.TextView" />
+
+    <TextView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="0"
+        android:id="@+id/activity_my_points_tv"
+        android:layout_weight="1"
+        android:textSize="18sp"
+        android:layout_marginTop="5dp"
+        android:gravity="center"
+        android:layout_above="@+id/buttons"
+        style="@android:style/TextAppearance.Material.Widget.TextView" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
+        android:id="@+id/buttons">
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="New Button"
+            android:id="@+id/activity_my_variant1_btn"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentStart="true"
+            android:layout_marginLeft="5dp" />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="New Button"
+            android:id="@+id/activity_my_variant2_btn"
+            android:layout_alignTop="@+id/activity_my_variant1_btn"
+            android:layout_alignParentEnd="true"
+            android:layout_marginRight="5dp"
+            android:elevation="3dp" />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="New Button"
+            android:id="@+id/activity_my_variant3_btn"
+            android:layout_below="@+id/activity_my_variant1_btn"
+            android:layout_alignParentStart="true"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="5dp" />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="New Button"
+            android:id="@+id/activity_my_variant4_btn"
+            android:layout_below="@+id/activity_my_variant2_btn"
+            android:layout_alignStart="@+id/activity_my_variant2_btn"
+            android:layout_marginTop="10dp"
+            android:layout_marginRight="5dp"
+            android:elevation="10dp" />
+    </RelativeLayout>
+
+</RelativeLayout>

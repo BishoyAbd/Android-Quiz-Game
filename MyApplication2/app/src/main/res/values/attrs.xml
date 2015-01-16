@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="answer">
+        <attr name="state_right" format="boolean" />
+        <attr name="state_wrong" format="boolean" />
+        <attr name="state_idle" format="boolean"/>
+    </declare-styleable>
+</resources>

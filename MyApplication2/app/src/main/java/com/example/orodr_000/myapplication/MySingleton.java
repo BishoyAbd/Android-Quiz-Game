@@ -57,10 +57,6 @@ public class MySingleton {
         getRequestQueue().add(req);
     }
 
-    public ImageLoader getImageLoader() {
-        return mImageLoader;
-    }
-
     public static synchronized MySingleton getInstance() {
         return mInstance;
     }
