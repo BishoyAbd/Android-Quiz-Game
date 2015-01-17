@@ -93,7 +93,6 @@ public class ButtonActivity extends Activity {
     public TickPlusDrawable tickPlusDrawable;
     public boolean gameStart=false;
     private View animView;
-    private View backgroundView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -108,7 +107,7 @@ public class ButtonActivity extends Activity {
         setContentView(R.layout.activity_button);
 
         animView = findViewById(R.id.animView);
-        backgroundView=findViewById(R.id.animView1);
+        View backgroundView = findViewById(R.id.animView1);
         tickPlusDrawable = new TickPlusDrawable(getResources().getDimensionPixelSize(R.dimen.stroke_width),  Color.parseColor("#37474F"),Color.parseColor("#FF5722"),Color.parseColor("#4CAF50"));
         animView.setBackground(tickPlusDrawable);
         backgroundView.setBackground(new TickBackgroundDrawable(Color.parseColor("#37474F")));
@@ -128,7 +127,7 @@ public class ButtonActivity extends Activity {
         pnts = (TextView) findViewById(R.id.activity_my_points_tv);
         progress = (ProgressBar) findViewById(R.id.progressBar);
 
-        DisplayImageOptions defaultOptions =
+        /*DisplayImageOptions defaultOptions =
                 new DisplayImageOptions.Builder()
                         .cacheInMemory(true)
                                 //.showImageOnLoading(R.drawable.loading)
@@ -141,7 +140,7 @@ public class ButtonActivity extends Activity {
                 new ImageLoaderConfiguration.Builder(getApplicationContext())
                         .defaultDisplayImageOptions(defaultOptions)
                         .build();
-        imageLoader.init(mImageLoaderConfig);
+        imageLoader.init(mImageLoaderConfig);*/
 
         long startTime = 71 * 1000;
         try {
@@ -319,8 +318,31 @@ public class ButtonActivity extends Activity {
         mImage_url = savedInstanceState.getString("Url");
         points= Integer.valueOf(pnts.getText().toString());
         //aq.id(R.id.view).image(mImage_url, true, true, 0, R.drawable.loading,null,AQuery.FADE_IN);
-        ImageView image =(ImageView)findViewById(R.id.view);
-        imageLoader.displayImage(mImage_url, image);
+        final ImageView image =(ImageView)findViewById(R.id.view);
+        //imageLoader.displayImage(mImage_url, image);
+        Animation anim1 = AnimationUtils.loadAnimation(this, android.R.anim.fade_in);
+
+        Glide.with(this).load(mImage_url).animate(anim1).fitCenter().into(new GlideDrawableImageViewTarget(image) {
+            AnimationDrawable imageAnimation;
+            @Override
+            public void onResourceReady(GlideDrawable drawable, GlideAnimation anim) {
+                super.onResourceReady(drawable, anim);
+
+                imageAnimation.stop();
+                image.setBackground(null);
+            }
+
+            @Override
+            public void onLoadStarted(Drawable placeholder) {
+                super.onLoadStarted(placeholder);
+                image.setBackgroundResource(R.drawable.imageanim);
+
+                imageAnimation=(AnimationDrawable) image.getBackground();
+                imageAnimation.start();
+            }
+
+        });
+
         try {
             showTimer(remainingTime);
         } catch (NumberFormatException e) {
@@ -817,7 +839,7 @@ public class ButtonActivity extends Activity {
             AnimatorSet set = new AnimatorSet();
             int cx;
             int cy;
-            cx=0;
+            cx=animView.getWidth()/2;
             cy=0;
             int initialRadius =  Math.max(animView.getWidth(), animView.getHeight())*2;
 
@@ -860,7 +882,7 @@ public class ButtonActivity extends Activity {
             AnimatorSet set = new AnimatorSet();
             int cx;
             int cy;
-            cx=0;
+            cx=animView.getWidth()/2;
             cy=0;
             int initialRadius =  Math.max(animView.getWidth(), animView.getHeight())*2;
 
@@ -927,7 +949,7 @@ public class ButtonActivity extends Activity {
             AnimatorSet set = new AnimatorSet();
             int cx;
             int cy;
-            cx=animView.getWidth();
+            cx=animView.getWidth()/2;
             cy=animView.getHeight();
             int initialRadius =  Math.max(animView.getWidth(), animView.getHeight())*2;
 
