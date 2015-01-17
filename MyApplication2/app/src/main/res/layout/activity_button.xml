@@ -168,7 +168,7 @@
             android:elevation="10dp"
             android:visibility="invisible" />-->
 
-        <View
+        <!--<View
             android:id="@+id/animView1"
             android:layout_centerVertical="true"
             android:layout_centerHorizontal="true"
@@ -181,7 +181,7 @@
             android:layout_centerHorizontal="true"
             android:layout_width="40dp"
             android:layout_height="40dp"
-            android:elevation="6dp" />
+            android:elevation="6dp" />-->
 
     </RelativeLayout>
 

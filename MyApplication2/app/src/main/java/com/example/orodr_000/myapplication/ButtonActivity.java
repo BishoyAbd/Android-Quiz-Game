@@ -48,10 +48,6 @@ import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.GlideDrawableImageViewTarget;
 import com.getbase.floatingactionbutton.FloatingActionButton;
-import com.nostra13.universalimageloader.core.DisplayImageOptions;
-import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
-import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -67,7 +63,6 @@ import static android.graphics.Paint.ANTI_ALIAS_FLAG;
 
 
 public class ButtonActivity extends Activity {
-    static ImageLoader imageLoader = ImageLoader.getInstance();
     int[] randArray;
     String[] strTextArray = {""};
     private Activity activity;
@@ -766,16 +761,6 @@ public class ButtonActivity extends Activity {
             setupPauseMode();
         }
 
-        private void setupPlusMode() {
-            mPoints[0] = mBounds.left;
-            mPoints[1] = mBounds.centerY();
-            mPoints[2] = mBounds.right;
-            mPoints[3] = mBounds.centerY();
-            mPoints[4] = mBounds.centerX();
-            mPoints[5] = mBounds.top;
-            mPoints[6] = mBounds.centerX();
-            mPoints[7] = mBounds.bottom;
-        }
         private void setupPauseMode() {
             mPoints[0] = mBounds.centerX()-mBounds.centerX()/4;
             mPoints[1] = mBounds.top;
@@ -816,15 +801,6 @@ public class ButtonActivity extends Activity {
             canvas.rotate(180 * mRotation, (x(2) + x(3)) / 2, (y(2) + y(3)) / 2);
             canvas.drawLine(x(2), y(2), x(3), y(3), mLinePaint);
             canvas.restore();
-        }
-
-        public void toggle() {
-            if(mTickMode) {
-                animatePlus();
-            } else {
-                animateCross();
-            }
-            mTickMode = !mTickMode;
         }
 
         public void animateTick() {
@@ -909,31 +885,6 @@ public class ButtonActivity extends Activity {
 
                 }
             });
-            set.start();
-        }
-
-        public void animatePlus() {
-            AnimatorSet set = new AnimatorSet();
-            set.playTogether(
-                    ObjectAnimator.ofFloat(this, mPropertyPointAX, mBounds.left),
-                    ObjectAnimator.ofFloat(this, mPropertyPointAY, mBounds.centerY()),
-
-                    ObjectAnimator.ofFloat(this, mPropertyPointBX, mBounds.right),
-                    ObjectAnimator.ofFloat(this, mPropertyPointBY, mBounds.centerY()),
-
-                    ObjectAnimator.ofFloat(this, mPropertyPointCX, mBounds.centerX()),
-                    ObjectAnimator.ofFloat(this, mPropertyPointCY, mBounds.top),
-
-                    ObjectAnimator.ofFloat(this, mPropertyPointDX, mBounds.centerX()),
-                    ObjectAnimator.ofFloat(this, mPropertyPointDY, mBounds.bottom),
-
-                    ObjectAnimator.ofFloat(this, mRotationProperty, 0f, 1f),
-                    ObjectAnimator.ofObject(this, mLineColorProperty, mArgbEvaluator, Color.parseColor("#3F51B5")),
-                    ObjectAnimator.ofObject(this, mBackgroundColorProperty, mArgbEvaluator, mTickColor)
-            );
-            set.setDuration(ANIMATION_DURATION);
-            set.setStartDelay(500);
-            set.setInterpolator(ANIMATION_INTERPOLATOR);
             set.start();
         }
 
