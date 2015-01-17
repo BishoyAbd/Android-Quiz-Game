@@ -73,10 +73,10 @@ public class ButtonActivity extends Activity {
     private Activity activity;
 
     private String mImage_url;
-    private Button var1;
-    private Button var2;
-    private Button var3;
-    private Button var4;
+    private TextView var1;
+    private TextView var2;
+    private TextView var3;
+    private TextView var4;
     private TextView pnts;
     private ProgressBar progress;
     private String strSearchText;
@@ -120,10 +120,10 @@ public class ButtonActivity extends Activity {
         noButton.setSize(FloatingActionButton.SIZE_MINI);*/
 
 
-        var1 = (Button) findViewById(R.id.activity_my_variant1_btn);
-        var2 = (Button) findViewById(R.id.activity_my_variant2_btn);
-        var3 = (Button) findViewById(R.id.activity_my_variant3_btn);
-        var4 = (Button) findViewById(R.id.activity_my_variant4_btn);
+        var1 = (TextView) findViewById(R.id.activity_my_variant1_btn);
+        var2 = (TextView) findViewById(R.id.activity_my_variant2_btn);
+        var3 = (TextView) findViewById(R.id.activity_my_variant3_btn);
+        var4 = (TextView) findViewById(R.id.activity_my_variant4_btn);
         pnts = (TextView) findViewById(R.id.activity_my_points_tv);
         progress = (ProgressBar) findViewById(R.id.progressBar);
 
@@ -374,7 +374,6 @@ public class ButtonActivity extends Activity {
     public void NextImage() {if (gameStart){
         tickPlusDrawable.animatePause();}
         gameStart=true;
-
         /*if(noButton.getVisibility() == View.VISIBLE){
             animateHideAnswer(noButton);
             //noButton.setVisibility(View.INVISIBLE);
@@ -451,10 +450,7 @@ public class ButtonActivity extends Activity {
         //TextView tv = (TextView) v;
         Button btn=(Button) v;
         String answ;
-        var1.setEnabled(false);
-        var2.setEnabled(false);
-        var3.setEnabled(false);
-        var4.setEnabled(false);
+
         answ = strAnswer;
 
         if (CheckAnswer(btn.getText().toString(), answ)) {
@@ -684,10 +680,6 @@ public class ButtonActivity extends Activity {
 
                 imageAnimation.stop();
                 image.setBackground(null);
-                var1.setEnabled(true);
-                var2.setEnabled(true);
-                var3.setEnabled(true);
-                var4.setEnabled(true);
             }
 
             @Override
@@ -721,7 +713,7 @@ public class ButtonActivity extends Activity {
 
     public class TickPlusDrawable extends Drawable {
 
-        private static final long ANIMATION_DURATION = 200;
+        private static final long ANIMATION_DURATION = 500;
         private final Interpolator ANIMATION_INTERPOLATOR = new DecelerateInterpolator();
 
         private Paint mLinePaint;

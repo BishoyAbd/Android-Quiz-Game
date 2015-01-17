@@ -29,7 +29,6 @@
         </activity>
         <activity
             android:name=".ButtonActivity"
-            android:screenOrientation="portrait"
             android:configChanges="keyboardHidden|screenSize"
             android:label="@string/title_activity_button" >
         </activity>

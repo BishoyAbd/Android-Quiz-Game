@@ -66,7 +66,6 @@
         android:layout_centerHorizontal="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentRight="true"
-        android:gravity="center"
         android:id="@+id/buttons"
         android:layout_marginBottom="5dp">
 
@@ -80,13 +79,10 @@
             android:layout_marginLeft="5dp"
             android:onClick="AnswerClick"
             android:translationZ="100dp"
-            android:background="#FF5722"
-            android:layout_toLeftOf="@+id/animView1"
-            android:layout_marginRight="-5dp"
-            android:layout_marginBottom="-5dp" />
+            android:background="#FF5722" />
 
         <com.example.orodr_000.myapplication.FontFitButton
-            android:layout_width="match_parent"
+            android:layout_width="150dp"
             android:layout_height="wrap_content"
             android:text="New Button"
             android:id="@+id/activity_my_variant2_btn"
@@ -95,26 +91,23 @@
             android:onClick="AnswerClick"
             android:layout_alignParentTop="true"
             android:translationZ="1dp"
-            android:background="#3F51B5"
-            android:layout_toRightOf="@+id/animView1"
-            android:layout_marginLeft="-5dp"
-            android:layout_marginBottom="-5dp" />
+            android:background="#3F51B5" />
 
         <com.example.orodr_000.myapplication.FontFitButton
-            android:layout_width="match_parent"
+            android:layout_width="150dp"
             android:layout_height="wrap_content"
             android:text="New Button"
             android:id="@+id/activity_my_variant3_btn"
-            android:layout_below="@+id/animView1"
+            android:layout_below="@+id/activity_my_variant1_btn"
             android:layout_alignParentStart="true"
+            android:layout_marginTop="10dp"
             android:onClick="AnswerClick"
+            android:layout_alignLeft="@+id/activity_my_variant1_btn"
             android:layout_marginLeft="5dp"
-            android:background="#ffd600"
-            android:layout_alignRight="@+id/activity_my_variant1_btn"
-            android:layout_marginTop="5dp" />
+            android:background="#ffd600" />
 
         <com.example.orodr_000.myapplication.FontFitButton
-            android:layout_width="match_parent"
+            android:layout_width="150dp"
             android:layout_height="wrap_content"
             android:text="New Button"
             android:id="@+id/activity_my_variant4_btn"
@@ -179,15 +172,16 @@
             android:id="@+id/animView1"
             android:layout_centerVertical="true"
             android:layout_centerHorizontal="true"
-            android:layout_width="49dp"
-            android:layout_height="49dp"
+            android:layout_width="39dp"
+            android:layout_height="39dp"
             android:elevation="6dp" />
         <View
             android:id="@+id/animView"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:elevation="6dp"
-            android:layout_centerInParent="true" />
+            android:layout_centerVertical="true"
+            android:layout_centerHorizontal="true"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:elevation="6dp" />
 
     </RelativeLayout>
 
