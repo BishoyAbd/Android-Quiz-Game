@@ -1,15 +1,12 @@
 package com.example.orodr_000.myapplication;
 
-/**
- * Created by orodr_000 on 08.01.2015.
- */
+
 
 import android.content.Context;
 import android.graphics.Paint;
 import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.widget.Button;
-import android.widget.TextView;
 
 
 

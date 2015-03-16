@@ -6,7 +6,14 @@ import android.animation.AnimatorSet;
 import android.animation.ArgbEvaluator;
 import android.animation.ObjectAnimator;
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Fragment;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.AssetManager;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -22,7 +29,9 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.CountDownTimer;
-import android.support.annotation.NonNull;
+import android.os.SystemClock;
+import android.support.v4.app.FragmentActivity;
+import android.util.Log;
 import android.util.Property;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -34,10 +43,10 @@ import android.view.animation.AnimationUtils;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.Interpolator;
 import android.widget.Button;
+import android.widget.Chronometer;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.Response;
@@ -47,7 +56,6 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.GlideDrawableImageViewTarget;
-import com.getbase.floatingactionbutton.FloatingActionButton;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -57,21 +65,24 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Random;
 
 import static android.graphics.Paint.ANTI_ALIAS_FLAG;
 
 
-public class ButtonActivity extends Activity {
+public class ButtonActivity extends FragmentActivity {
     int[] randArray;
+    List<Integer> randList=new ArrayList<>();
     String[] strTextArray = {""};
     private Activity activity;
 
-    private String mImage_url;
-    private TextView var1;
-    private TextView var2;
-    private TextView var3;
-    private TextView var4;
+    private Button var1;
+    private Button var2;
+    private Button var3;
+    private Button var4;
     private TextView pnts;
     private ProgressBar progress;
     private String strSearchText;
@@ -82,21 +93,23 @@ public class ButtonActivity extends Activity {
     private long remainingTime;
     private boolean timerHasStarted = false;
     private int points;
-    private FloatingActionButton button;
-    private FloatingActionButton yesButton;
-    private FloatingActionButton noButton;
-    public TickPlusDrawable tickPlusDrawable;
-    public boolean gameStart=false;
+    private TickPlusDrawable tickPlusDrawable;
+    private boolean gameStart=false;
     private View animView;
+    private Chronometer stopWatch;
+    private int es=0;
+    private ImageView image;
+    public static final String MyPREFERENCES = "MyPrefs" ;
+    SharedPreferences sharedpreferences;
+    private Fragment pauseFragment;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getWindow().requestFeature(Window.FEATURE_ACTION_BAR);
         getActionBar().hide();
-        //cardView.setPreventCornerOverlap(false);
-        // aq = new AQuery(this);
-        //setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
 
 
         setContentView(R.layout.activity_button);
@@ -107,46 +120,49 @@ public class ButtonActivity extends Activity {
         animView.setBackground(tickPlusDrawable);
         backgroundView.setBackground(new TickBackgroundDrawable(Color.parseColor("#37474F")));
 
-        /*button = (FloatingActionButton) findViewById(R.id.answerButton2);
-        button.setSize(FloatingActionButton.SIZE_MINI);
-        yesButton=(FloatingActionButton)findViewById(R.id.answerButtonYes);
-        yesButton.setSize(FloatingActionButton.SIZE_MINI);
-        noButton=(FloatingActionButton)findViewById(R.id.answerButtonNo);
-        noButton.setSize(FloatingActionButton.SIZE_MINI);*/
+        sharedpreferences = getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
 
+        //stopWatch=(Chronometer)findViewById(R.id.chronometer1);
+        /*stopWatch.setBase(SystemClock.elapsedRealtime());
+        stopWatch.setOnChronometerTickListener(new Chronometer.OnChronometerTickListener(){
 
-        var1 = (TextView) findViewById(R.id.activity_my_variant1_btn);
-        var2 = (TextView) findViewById(R.id.activity_my_variant2_btn);
-        var3 = (TextView) findViewById(R.id.activity_my_variant3_btn);
-        var4 = (TextView) findViewById(R.id.activity_my_variant4_btn);
+                                                   @Override
+                                                   public void onChronometerTick(Chronometer chronometer) {
+                                                       // TODO Auto-generated method stub
+                                                       es++;
+                                                       if(es>4){
+                                                           Log.d("timer","image reloaded "+es);
+                                                           es=0;
+                                                           stopWatch.stop();
+                                                           Glide.clear(image);
+                                                           //showImage(imageArray);
+                                                           NextImage();
+                                                           new getImageTask().execute();
+
+                                                       }
+
+                                                   }}
+        );*/
+
+        var1 = (Button) findViewById(R.id.activity_my_variant1_btn);
+        var2 = (Button) findViewById(R.id.activity_my_variant2_btn);
+        var3 = (Button) findViewById(R.id.activity_my_variant3_btn);
+        var4 = (Button) findViewById(R.id.activity_my_variant4_btn);
+        var1.setEnabled(false);
+        var2.setEnabled(false);
+        var3.setEnabled(false);
+        var4.setEnabled(false);
+
         pnts = (TextView) findViewById(R.id.activity_my_points_tv);
         progress = (ProgressBar) findViewById(R.id.progressBar);
+        FragmentManager fm = getFragmentManager();
+        pauseFragment=fm.findFragmentById(R.id.fragment);
+        FragmentTransaction ft = getFragmentManager().beginTransaction();
+        ft.hide(pauseFragment);
+        ft.commit();
 
-        /*DisplayImageOptions defaultOptions =
-                new DisplayImageOptions.Builder()
-                        .cacheInMemory(true)
-                                //.showImageOnLoading(R.drawable.loading)
-                        .showImageForEmptyUri(R.drawable.loading)
-                        .showImageOnFail(R.drawable.loading)
-                        .cacheOnDisc(true)
-                        .displayer(new FadeInBitmapDisplayer(500))
-                        .build();
-        ImageLoaderConfiguration mImageLoaderConfig =
-                new ImageLoaderConfiguration.Builder(getApplicationContext())
-                        .defaultDisplayImageOptions(defaultOptions)
-                        .build();
-        imageLoader.init(mImageLoaderConfig);*/
-
-        long startTime = 71 * 1000;
-        try {
-            showTimer(startTime);
-        } catch (NumberFormatException e) {
-            e.printStackTrace();
-        }
-        //timer.setText(String.valueOf(startTime / 1000));
-
-        progress.setMax(70);
-        progress.setProgress(70);
+        progress.setMax(45);
+        progress.setProgress(45);
         progress.setRotation(180);
         progress.getProgressDrawable().setColorFilter(Color.parseColor("#4CAF50"), PorterDuff.Mode.SRC_ATOP);
 
@@ -161,11 +177,17 @@ public class ButtonActivity extends Activity {
         }
         points = 0;
         activity = this;
-        //layout.setBackgroundResource(R.drawable.image);
 
-        if(savedInstanceState==null){
+
+        for(int j = 0; j < strTextArray.length; j++) randList.add(j);
             NextImage();
-            new getImageTask().execute();}
+            new getImageTask().execute();
+        long startTime = 46 * 1000;
+        try {
+            showTimer(startTime);
+        } catch (NumberFormatException e) {
+            e.printStackTrace();
+        }
         if (!timerHasStarted) {
             countDownTimer.start();
             timerHasStarted = true;
@@ -194,27 +216,93 @@ public class ButtonActivity extends Activity {
             public void onTick(long millisUntilFinished) {
                 remainingTime = millisUntilFinished;
                 progress.setProgress((int) millisUntilFinished / 1000);
-                if(remainingTime<51000){
-                    if (remainingTime < 21000) {
-                        // timer.setTextColor(Color.RED);
+                if(remainingTime<31000){
+                    if (remainingTime < 16000) {
+
                         progress.getProgressDrawable().setColorFilter(Color.parseColor("#FF5252"), PorterDuff.Mode.SRC_IN);
                     } else {
                         progress.getProgressDrawable().setColorFilter(Color.parseColor("#FFEB3B"), PorterDuff.Mode.SRC_IN);
-                        // timer.setTextColor(Color.BLACK);
+
                     }
                 }else {
                     progress.getProgressDrawable().setColorFilter(Color.parseColor("#4CAF50"), PorterDuff.Mode.SRC_IN);
                 }
-                //  timer.setText(String.valueOf(millisUntilFinished / 1000));
+
             }
 
             @Override
             public void onFinish() {
-                Toast toast = Toast.makeText(getApplicationContext(), "GAME OVER", Toast.LENGTH_LONG);
-                TextView t = (TextView) toast.getView().findViewById(android.R.id.message);
-                t.setTextColor(Color.RED);
-                toast.show();
-                activity.finish();
+                Glide.clear(image);
+                stopWatch.stop();
+                image.setBackground(null);
+                AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+
+                builder.setTitle("Results");
+
+                builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int id) {
+                                activity.finish();
+                                Intent intent = new Intent(ButtonActivity.this, HListViewTest.class);
+                                startActivity(intent);
+                                dialog.dismiss();
+                            }
+                        });
+
+                //final Dialog dialog = new Dialog(ButtonActivity.this);
+
+                //dialog.setContentView(R.layout.resultdialog);
+                //dialog.setCanceledOnTouchOutside(false);
+
+                //dialog.setTitle("Results");
+                //TextView text = (TextView) dialog.findViewById(R.id.textDialog);
+               // TextView text1 = (TextView) dialog.findViewById(R.id.textDialog2);
+                int highscore=Integer.parseInt(sharedpreferences.getString(strFile,"0"));
+                if(points>highscore){
+                    SharedPreferences.Editor editor=sharedpreferences.edit();
+                    editor.putString(strFile,String.valueOf(points));
+                    editor.apply();
+                    //text.setText("New High Score");
+                    String alert1 = "New High Score";
+                    String alert2 = "Your Result: " + String.valueOf(points);
+                    builder.setMessage(alert1 +"\n"+ alert2);
+
+                }else{
+
+
+                    //text.setText("High Score: "+String.valueOf(highscore));
+                    String alert1 = "High Score: "+String.valueOf(highscore);
+                    String alert2 = "Your Result: " + String.valueOf(points);
+                    builder.setMessage(alert1 +"\n"+ alert2);
+                }
+
+
+                Log.d("Editor", "Theme " + strFile);
+                AlertDialog alert11 = builder.create();
+                alert11.show();
+                //dialog.show();
+                /*dialog.setOnCancelListener(new DialogInterface.OnCancelListener()
+                {
+                    @Override
+                    public void onCancel(DialogInterface dialog)
+                    {
+                        ButtonActivity.this.finish();
+                        Intent intent = new Intent(ButtonActivity.this, HListViewTest.class);
+                        startActivity(intent);
+                    }
+                });
+
+                Button declineButton = (Button) dialog.findViewById(R.id.declineButton);
+                declineButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        activity.finish();
+                        Intent intent = new Intent(ButtonActivity.this, HListViewTest.class);
+                        startActivity(intent);
+                        dialog.dismiss();
+                    }
+                });*/
+
             }
         }.start();
 
@@ -226,17 +314,10 @@ public class ButtonActivity extends Activity {
     }
 
 
-    /*@Override
-    public void onWindowFocusChanged (boolean hasFocus) {
-        super.onWindowFocusChanged(hasFocus);
-        AnimationDrawable frameAnimation =
-                (AnimationDrawable) layout.getBackground();
-        if(hasFocus) {
-            frameAnimation.start();
-        } else {
-            frameAnimation.stop();
-        }
-    }*/
+
+
+
+
     public String[] LoadFile() throws IOException {
         AssetManager am = getAssets();
         am.list("");
@@ -280,77 +361,6 @@ public class ButtonActivity extends Activity {
     }
 
     @Override
-    public void onSaveInstanceState(@NonNull Bundle savedInstanceState) {
-        super.onSaveInstanceState(savedInstanceState);
-        // Save UI state changes to the savedInstanceState.
-        // This bundle will be passed to onCreate if the process is
-        // killed and restarted.
-        savedInstanceState.putString("Variant1", var1.getText().toString());
-        savedInstanceState.putString("Variant2", var2.getText().toString());
-        savedInstanceState.putString("Variant3", var3.getText().toString());
-        savedInstanceState.putString("Variant4", var4.getText().toString());
-        savedInstanceState.putLong("Time", remainingTime);
-        savedInstanceState.putString("Points", pnts.getText().toString());
-        savedInstanceState.putString("Url",mImage_url);
-        savedInstanceState.putString("Answer",strAnswer);
-        savedInstanceState.putDouble("myDouble", 1.9);
-        savedInstanceState.putInt("MyInt", 1);
-        savedInstanceState.putString("MyString", "Welcome back to Android");
-        // etc.
-    }
-    @Override
-    public void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {
-        super.onRestoreInstanceState(savedInstanceState);
-        // Restore UI state from the savedInstanceState.
-        // This bundle has also been passed to onCreate.
-        remainingTime=savedInstanceState.getLong("Time");
-        var1.setText(savedInstanceState.getString("Variant1"));
-        var2.setText(savedInstanceState.getString("Variant2"));
-        var3.setText(savedInstanceState.getString("Variant3"));
-        var4.setText(savedInstanceState.getString("Variant4"));
-        pnts.setText(savedInstanceState.getString(("Points")));
-        strAnswer=savedInstanceState.getString("Answer");
-        mImage_url = savedInstanceState.getString("Url");
-        points= Integer.valueOf(pnts.getText().toString());
-        //aq.id(R.id.view).image(mImage_url, true, true, 0, R.drawable.loading,null,AQuery.FADE_IN);
-        final ImageView image =(ImageView)findViewById(R.id.view);
-        //imageLoader.displayImage(mImage_url, image);
-        Animation anim1 = AnimationUtils.loadAnimation(this, android.R.anim.fade_in);
-
-        Glide.with(this).load(mImage_url).animate(anim1).fitCenter().into(new GlideDrawableImageViewTarget(image) {
-            AnimationDrawable imageAnimation;
-            @Override
-            public void onResourceReady(GlideDrawable drawable, GlideAnimation anim) {
-                super.onResourceReady(drawable, anim);
-
-                imageAnimation.stop();
-                image.setBackground(null);
-            }
-
-            @Override
-            public void onLoadStarted(Drawable placeholder) {
-                super.onLoadStarted(placeholder);
-                image.setBackgroundResource(R.drawable.imageanim);
-
-                imageAnimation=(AnimationDrawable) image.getBackground();
-                imageAnimation.start();
-            }
-
-        });
-
-        try {
-            showTimer(remainingTime);
-        } catch (NumberFormatException e) {
-            e.printStackTrace();
-        }
-        // timer.setText(String.valueOf(remainingTime / 1000));
-
-    }
-
-
-
-
-    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 
         int id = item.getItemId();
@@ -358,10 +368,9 @@ public class ButtonActivity extends Activity {
     }
 
     public void buttonClick(View v) {
+        Glide.clear(image);
         NextImage();
-
         new getImageTask().execute();
-
     }
 
 
@@ -369,20 +378,12 @@ public class ButtonActivity extends Activity {
     public void NextImage() {if (gameStart){
         tickPlusDrawable.animatePause();}
         gameStart=true;
-        /*if(noButton.getVisibility() == View.VISIBLE){
-            animateHideAnswer(noButton);
-            //noButton.setVisibility(View.INVISIBLE);
-            Log.d("Button","Wrong Answer");
-        }else{
-        if(yesButton.getVisibility() == View.VISIBLE){
-            animateHideAnswer(yesButton);
-            //yesButton.setVisibility(View.INVISIBLE);
-            Log.d("Button","Right Answer");
-        }}*/
         randArray = new int[4];
+
+        Collections.shuffle(randList,new Random());
         for (int i = 0; i < 4; i++) {
-            int randInt = new Random().nextInt(strTextArray.length);
-            randArray[i] = randInt;
+
+            randArray[i] = randList.get(i);
         }
 
 
@@ -392,13 +393,11 @@ public class ButtonActivity extends Activity {
         String fileName = strTheme;
         strSearchText = fileName + " " + strSearchText;
         strSearchText = Uri.encode(strSearchText);
-        System.out.println("Search string =>" + strSearchText);
+        Log.d("Next Image","Search string =>"+strSearchText);
 
     }
 
-    /*private static String removeLastChar(String str) {
-        return str.substring(0,str.length()-1);
-    }*/
+
     public boolean CheckAnswer(String a, String b) {
         return a.equalsIgnoreCase(b);
     }
@@ -418,8 +417,8 @@ public class ButtonActivity extends Activity {
             }
         }
 
-        if (remainingTime > 65000) {
-            addTime(70000 - remainingTime);
+        if (remainingTime > 40000) {
+            addTime(45000 - remainingTime);
         } else {
             addTime(5000);
         }
@@ -442,122 +441,36 @@ public class ButtonActivity extends Activity {
 
 
     public void AnswerClick(View v) {
-        //TextView tv = (TextView) v;
+
         Button btn=(Button) v;
         String answ;
-
+        var1.setEnabled(false);
+        var2.setEnabled(false);
+        var3.setEnabled(false);
+        var4.setEnabled(false);
+        image.setEnabled(false);
         answ = strAnswer;
 
         if (CheckAnswer(btn.getText().toString(), answ)) {
 
             AddPoints();
             tickPlusDrawable.animateTick();
-            /*if(tickPlusDrawable.animEnd){
-                NextImage();
-                new getImageTask().execute();}*/
-            //Toast toast = Toast.makeText(getApplicationContext(), "Right Answer", Toast.LENGTH_SHORT);
 
-            /*int cx;
-            int cy;
-            cx=yesButton.getWidth()/2;
-            cy=0;
-            int initialRadius =  Math.max(yesButton.getWidth(), yesButton.getHeight())*2;
-
-            Animator anim;
-            anim = ViewAnimationUtils.createCircularReveal(yesButton, cx, cy, 0, initialRadius);
-            anim.setDuration(1000);
-            button.setVisibility(View.INVISIBLE);
-            anim.setInterpolator(new DecelerateInterpolator(2f));
-            anim.addListener(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationStart(Animator animation) {
-                    super.onAnimationStart(animation);
-                    yesButton.setVisibility(View.VISIBLE);
-                    NextImage();
-                    new getImageTask().execute();
-                }
-            });
-
-
-            anim.start();*/
-
-            //TextView t = (TextView) toast.getView().findViewById(android.R.id.message);
-            //t.setTextColor(Color.GREEN);
-            //toast.show();
         } else {
 
             DecreasePoints();
             tickPlusDrawable.animateCross();
-
-            /*if(tickPlusDrawable.animEnd){
-                NextImage();
-                new getImageTask().execute();}*/
-           /* int cx =noButton.getWidth()/2;
-            int cy =0;
-            int initialRadius = noButton.getHeight()*2;
-
-            final Animator anim = ViewAnimationUtils.createCircularReveal(noButton, cx, cy, 0,initialRadius);
-
-            anim.setDuration(1000);
-            button.setVisibility(View.INVISIBLE);
-            anim.setInterpolator(new DecelerateInterpolator(2f));
-            anim.addListener(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationStart(Animator animation) {
-                    super.onAnimationStart(animation);
-                    //yesButton.setVisibility(View.INVISIBLE);
-                    noButton.setVisibility(View.VISIBLE);
-
-                    NextImage();
-                    new getImageTask().execute();
-                }
-            });
-
-
-            anim.start();*/
-            //Toast toast = Toast.makeText(getApplicationContext(), "Wrong Answer", Toast.LENGTH_SHORT);
-            //TextView t = (TextView) toast.getView().findViewById(android.R.id.message);
-            // button.setIcon(R.drawable.ic_action_cancel_dark);
-            // button.setColorNormal(Color.RED);
-            //t.setTextColor(Color.RED);
-            //toast.show();
         }
         pnts.setText(String.valueOf(points));
 
-
-        /*AlertDialog alertDialog = new AlertDialog.Builder(
-                MyActivity.this).create();
-
-        // Setting Dialog Title
-        alertDialog.setTitle("Alert Dialog");
-
-        // Setting Dialog Message
-        alertDialog.setMessage("Right Answer: "+strAnswer+". Your Answer: "+tv.getText().toString());
-
-
-        // Setting OK Button
-        alertDialog.setButton("OK", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int which) {
-                // Write your code here to execute after dialog closed
-                //Toast.makeText(getApplicationContext(), "You clicked on OK", Toast.LENGTH_SHORT).show();
-                NextImage();
-            }
-        });
-
-        // Showing Alert Message
-        alertDialog.show();
-        */
     }
 
     public class getImageTask extends AsyncTask<Void, Void, Void> {
-        //ProgressDialog dialog;
 
         @Override
         protected void onPreExecute() {
 
             super.onPreExecute();
-
-            //dialog = ProgressDialog.show(MyActivity.this, "", "Please wait...");
         }
 
         @Override
@@ -567,7 +480,7 @@ public class ButtonActivity extends Activity {
             String url;
 
             url = "https://ajax.googleapis.com/ajax/services/search/images?" +
-                    "v=1.0&q=" + strSearchText + "&rsz=8&imgsz=large&as_filetype=jpg";
+                    "v=1.0&q=" + strSearchText + "&rsz=8&as_filetype=jpg";
 
             final JsonObjectRequest jsonObjReq = new JsonObjectRequest(Request.Method.GET,
                     url, null,
@@ -578,6 +491,7 @@ public class ButtonActivity extends Activity {
 
                             try {
                                 JSONObject jObject = response.getJSONObject("responseData");
+                                Log.d("",jObject.toString());
                                 JSONArray jsonArray = jObject.getJSONArray("results");
                                 showImage(jsonArray);
                             } catch (JSONException e) {
@@ -593,36 +507,6 @@ public class ButtonActivity extends Activity {
                 }
             });
             MySingleton.getInstance(activity).addToRequestQueue(jsonObjReq);
-            /*aq.ajax(url, JSONObject.class, new AjaxCallback<JSONObject>() {
-
-                @Override
-                public void callback(String url, JSONObject json, AjaxStatus status) {
-
-
-                    if(json != null){
-
-                        //successful ajax call, show status code and json content
-                        JSONObject jObject;
-                        try {
-                            jObject = json.getJSONObject("responseData");
-                            JSONArray jsonArray = jObject.getJSONArray("results");
-                            showImage(jsonArray);
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                        //Toast.makeText(aq.getContext(), status.getCode() + ":" + json.toString(), Toast.LENGTH_LONG).show();
-
-                    }else{
-
-                        //ajax error, show error code
-                        Toast.makeText(aq.getContext(), "Error:" + status.getCode(), Toast.LENGTH_LONG).show();
-                    }
-                }
-            });*/
-
-
-
-
             return null;
         }
 
@@ -630,85 +514,108 @@ public class ButtonActivity extends Activity {
         protected void onPostExecute(Void result) {
 
             super.onPostExecute(result);
-
-            /*if (dialog.isShowing()) {
-                dialog.dismiss();
-            }*/
-
         }
     }
+
+    public void onPauseClick(View v){
+        FragmentTransaction ft = getFragmentManager().beginTransaction();
+        ft.setCustomAnimations(R.anim.slide_in_top,
+                R.anim.slide_out_top);
+        if (pauseFragment.isHidden()) {
+            ft.show(pauseFragment);
+            tickPlusDrawable.animatePlay();
+            stopWatch.stop();
+            countDownTimer.cancel();
+            var1.setEnabled(false);
+            var2.setEnabled(false);
+            var3.setEnabled(false);
+            var4.setEnabled(false);
+            image.setEnabled(false);
+
+        } else {
+            ft.hide(pauseFragment);
+            tickPlusDrawable.animatePause();
+            showTimer(remainingTime);
+            var1.setEnabled(true);
+            var2.setEnabled(true);
+            var3.setEnabled(true);
+            var4.setEnabled(true);
+            image.setEnabled(true);
+
+
+        }
+        ft.commit();
+    }
+
+
     public void showImage(JSONArray json){
         if (countDownTimer == null) {
             timerResume();
         }
 
-        mImage_url = getImage(json);
-        final ImageView image =(ImageView)findViewById(R.id.view);
+        String mImage_url = getImage(json);
+        image =(ImageView)findViewById(R.id.view);
 
-        /*imageLoader.displayImage(mImage_url, image, new
-                SimpleImageLoadingListener() {
 
-                    @Override
-                    public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
 
-                    }
-
-                    @Override
-                    public void onLoadingFailed(String imageUri, View view, FailReason failReason) {
-                        super.onLoadingFailed(imageUri, view, failReason);
-                        Log.d("Image Loading Failed","Failed to load image "+failReason);
-                    }
-
-                    @Override
-                    public void onLoadingStarted(String imageUri, View view) {
-                        super.onLoadingStarted(imageUri, view);
-                    }
-
-                });*/
         Animation anim1 = AnimationUtils.loadAnimation(this, android.R.anim.fade_in);
 
         Glide.with(this).load(mImage_url).animate(anim1).fitCenter().into(new GlideDrawableImageViewTarget(image) {
             AnimationDrawable imageAnimation;
+
             @Override
             public void onResourceReady(GlideDrawable drawable, GlideAnimation anim) {
                 super.onResourceReady(drawable, anim);
-
+                es=0;
                 imageAnimation.stop();
+                stopWatch.stop();
+                showTimer(remainingTime);
                 image.setBackground(null);
+                var1.setEnabled(true);
+                var2.setEnabled(true);
+                var3.setEnabled(true);
+                var4.setEnabled(true);
+                image.setEnabled(true);
+                var1.setText(String.valueOf(strTextArray[randArray[0]]));
+                var2.setText(String.valueOf(strTextArray[randArray[1]]));
+                var3.setText(String.valueOf(strTextArray[randArray[2]]));
+                var4.setText(String.valueOf(strTextArray[randArray[3]]));
+
             }
 
             @Override
             public void onLoadStarted(Drawable placeholder) {
                 super.onLoadStarted(placeholder);
+
                 image.setBackgroundResource(R.drawable.imageanim);
-
-                imageAnimation=(AnimationDrawable) image.getBackground();
+                imageAnimation = (AnimationDrawable) image.getBackground();
+                var1.setText("");
+                var2.setText("");
+                var3.setText("");
+                var4.setText("");
+                if(remainingTime<1500){
+                    imageAnimation.stop();
+                    stopWatch.stop();
+                }else{
                 imageAnimation.start();
+                stopWatch.start();
+                countDownTimer.cancel();}
+
             }
 
+            @Override
+            public void onLoadFailed(Exception e, Drawable errorDrawable) {
+                super.onLoadFailed(e, errorDrawable);
+
+            }
         });
-       /* Picasso.with(this).load(mImage_url).fit().into(image,new Callback() {
-            @Override
-            public void onSuccess() {
 
-            }
 
-            @Override
-            public void onError() {
-
-            }
-        });*/
-
-        //aq.id(R.id.view).image(mImage_url, true, true, 0, R.drawable.loading,null,AQuery.FADE_IN);
-        var1.setText(String.valueOf(strTextArray[randArray[0]]));
-        var2.setText(String.valueOf(strTextArray[randArray[1]]));
-        var3.setText(String.valueOf(strTextArray[randArray[2]]));
-        var4.setText(String.valueOf(strTextArray[randArray[3]]));
     }
 
     public class TickPlusDrawable extends Drawable {
 
-        private static final long ANIMATION_DURATION = 500;
+        private static final long ANIMATION_DURATION = 200;
         private final Interpolator ANIMATION_INTERPOLATOR = new DecelerateInterpolator();
 
         private Paint mLinePaint;
@@ -717,7 +624,6 @@ public class ButtonActivity extends Activity {
         private float[] mPoints = new float[8];
         private final RectF mBounds = new RectF();
 
-        private boolean mTickMode;
         private ArgbEvaluator mArgbEvaluator = new ArgbEvaluator();
 
         private float mRotation;
@@ -919,6 +825,41 @@ public class ButtonActivity extends Activity {
             );
             set.setDuration(ANIMATION_DURATION);
             set.setStartDelay(500);
+            set.setInterpolator(ANIMATION_INTERPOLATOR);
+            set.start();
+        }
+
+        public void animatePlay() {
+            AnimatorSet set = new AnimatorSet();
+            int cx;
+            int cy;
+            cx=animView.getWidth()/2;
+            cy=animView.getHeight();
+            int initialRadius =  Math.max(animView.getWidth(), animView.getHeight())*2;
+
+            Animator anim;
+            anim = ViewAnimationUtils.createCircularReveal(animView, cx, cy, 0,initialRadius );
+            set.playTogether(
+
+                    anim,
+                    ObjectAnimator.ofFloat(this, mPropertyPointAX, mBounds.centerX()-mBounds.centerX()/4),
+                    ObjectAnimator.ofFloat(this, mPropertyPointAY, mBounds.top),
+
+                    ObjectAnimator.ofFloat(this, mPropertyPointBX, mBounds.right),
+                    ObjectAnimator.ofFloat(this, mPropertyPointBY, mBounds.centerX()),
+
+                    ObjectAnimator.ofFloat(this, mPropertyPointCX, mBounds.right),
+                    ObjectAnimator.ofFloat(this, mPropertyPointCY, mBounds.centerX()),
+
+                    ObjectAnimator.ofFloat(this, mPropertyPointDX, mBounds.centerX()-mBounds.centerX()/4),
+                    ObjectAnimator.ofFloat(this, mPropertyPointDY, mBounds.bottom),
+
+                    ObjectAnimator.ofFloat(this, mRotationProperty, 0f, 1f),
+
+                    ObjectAnimator.ofObject(this, mLineColorProperty, mArgbEvaluator,Color.parseColor("#ffd600") ),
+                    ObjectAnimator.ofObject(this, mBackgroundColorProperty, mArgbEvaluator, mTickColor)
+            );
+            set.setDuration(ANIMATION_DURATION);
             set.setInterpolator(ANIMATION_INTERPOLATOR);
             set.start();
         }

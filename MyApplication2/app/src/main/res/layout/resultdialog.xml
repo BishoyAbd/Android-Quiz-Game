@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent">
+
+
+
+    <TextView
+        android:id="@+id/textDialog"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="#000"
+        android:layout_alignParentLeft="false"
+        android:layout_centerHorizontal="true" />
+    <TextView
+        android:id="@+id/textDialog2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="#000"
+        android:layout_alignParentLeft="false"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@+id/textDialog" />
+
+    <Button
+        android:id="@+id/declineButton"
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:text="Ok"
+        android:layout_marginRight="5dp"
+
+        android:layout_alignParentTop="false"
+        android:layout_marginStart="62dp"
+        android:layout_below="@+id/textDialog2"
+        android:layout_alignParentLeft="false"
+        android:layout_centerHorizontal="true" />
+</RelativeLayout>

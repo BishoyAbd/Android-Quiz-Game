@@ -7,6 +7,12 @@
     <color name="primary_text">#212121</color>
     <color name="secondary_text">#727272</color>
     <color name="icons">#FFFFFF</color>
-    <color name="background">#37474F</color>
     <color name="divider">#B6B6B6</color>
+    <color name="background">#607D8B</color>
+    <color name="transition">#9C27B0</color>
+    <color name="red_button">#FF5722</color>
+    <color name="yellow_button">#ffd600</color>
+    <color name="green_button">#4CAF50</color>
+    <color name="blue_button">#3f51B5</color>
+    <!--<color name="background">#37474F</color>-->
 </resources>

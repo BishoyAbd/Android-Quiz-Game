@@ -1,1 +1,1 @@
-Capital,DC Character,Marvel Character,Movie screenshot,Flag,Game Screenshot
+Capital sights,Movie screenshot,Flag,Game Screenshot,Painting,Paintings by,DC Character,Marvel Character

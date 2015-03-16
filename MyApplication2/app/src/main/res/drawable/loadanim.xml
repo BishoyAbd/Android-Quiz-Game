@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<animation-list xmlns:android="http://schemas.android.com/apk/res/android" android:oneshot="false">
+    <item
+        android:drawable="@drawable/flags"
+        android:duration="50"/>
+    <item
+        android:drawable="@drawable/games"
+        android:duration="50"/>
+    <item
+        android:drawable="@drawable/movies"
+        android:duration="50"/>
+    <item
+        android:drawable="@drawable/capitals"
+        android:duration="50"/>
+    <item
+        android:drawable="@drawable/dc_logo"
+        android:duration="50"/>
+    <item
+        android:drawable="@drawable/marvel_logo"
+        android:duration="50"/>
+    <item
+        android:drawable="@drawable/paintings"
+        android:duration="50"/>
+    <item
+        android:drawable="@drawable/painters"
+        android:duration="50"/>
+
+</animation-list>

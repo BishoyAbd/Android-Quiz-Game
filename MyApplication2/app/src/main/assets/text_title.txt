@@ -1,1 +1,1 @@
-Capitals,DC Characters,Marvel Characters,Movies,Country Flags,PC Games(2014)
+Capitals,Movies,Country Flags,PC Games(2014),Paintings,Painters,DC Characters,Marvel Characters

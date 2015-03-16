@@ -1,0 +1,17 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.example.orodr_000.myapplication.FirstFragment"
+    android:background="#000000"
+    android:elevation="10dp"
+    android:visibility="invisible">
+
+    <!-- TODO: Update blank fragment layout -->
+    <TextView android:layout_width="match_parent" android:layout_height="match_parent"
+        android:text="Paused"
+        android:id="@+id/msg"
+        android:gravity="center"
+        android:textColor="#ffffffff"
+        android:textSize="@dimen/fab_size_normal" />
+
+</FrameLayout>

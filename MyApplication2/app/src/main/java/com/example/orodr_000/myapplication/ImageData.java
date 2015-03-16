@@ -1,46 +1,52 @@
 package com.example.orodr_000.myapplication;
 
-import org.json.JSONObject;
+import android.graphics.Bitmap;
 
-/**
- * Created by orodr_000 on 21.11.2014.
- */
+
+
 public class ImageData {
-    JSONObject json;
-    String strAnswer;
-    String strSearchText;
-    int[] randArray;
+    private Bitmap image;
+    private String strAnswer;
+    private String var1;
+    private String var2;
+    private String var3;
+    private String var4;
 
-    public JSONObject getJson() {
-        return json;
+    public String getVar1() {
+        return var1;
+    }
+
+    public String getVar2() {
+        return var2;
+    }
+
+    public String getVar3() {
+        return var3;
+    }
+
+    public String getVar4() {
+        return var4;
+    }
+
+    public ImageData(String strAnswer, String var1, String var2, String var3, String var4) {
+        this.strAnswer = strAnswer;
+        this.var1 = var1;
+        this.var2 = var2;
+        this.var3 = var3;
+        this.var4 = var4;
+    }
+
+    public Bitmap getImage() {
+        return image;
+    }
+
+    public void setImage(Bitmap image) {
+        this.image = image;
     }
 
     public String getStrAnswer() {
         return strAnswer;
     }
 
-    public String getStrSearchText() {
-        return strSearchText;
-    }
-
-    public String[] getStrTextArray() {
-        return strTextArray;
-    }
-
-    public int[] getRandArray() {
-        return randArray;
-    }
-
-    public ImageData(JSONObject json, String strAnswer, String strSearchText, String[] strTextArray,int[] randArray) {
-
-        this.json = json;
-        this.strAnswer = strAnswer;
-        this.strSearchText = strSearchText;
-        this.strTextArray = strTextArray;
-        this.randArray=randArray;
-
-    }
-
-    String[] strTextArray;
 
 }
