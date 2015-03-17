@@ -3,8 +3,11 @@ package com.example.orodr_000.myapplication;
 import android.transition.ChangeBounds;
 import android.transition.Explode;
 import android.transition.Fade;
+import android.transition.Slide;
 import android.transition.Transition;
 import android.transition.TransitionSet;
+import android.view.Gravity;
+import android.view.animation.DecelerateInterpolator;
 
 public final class TransitionUtils {
 
@@ -14,15 +17,35 @@ public final class TransitionUtils {
      * status bar won't appear to "blink" as they fade in/out during the transition.
      */
     public static Transition makeEnterTransition() {
-        Transition slide = new Fade();
-        slide.setStartDelay(300);
-        return slide;
+        TransitionSet set=new TransitionSet();
+        set.setOrdering(TransitionSet.ORDERING_TOGETHER);
+        Transition slide = new Slide();
+        slide.setStartDelay(900);
+        slide.setDuration(1000);
+        slide.addTarget(R.id.button2);
+        slide.addTarget(R.id.button8);
+        set.addTransition(slide);
+
+        Transition slide1 = new Slide(Gravity.TOP);
+        slide1.addTarget(R.id.highscore_tv);
+        slide1.addTarget(R.id.category_image_view);
+        slide1.setStartDelay(900);
+        slide1.setDuration(1000);
+        set.addTransition(slide1);
+
+        Transition slide2=new Slide(Gravity.LEFT);
+        slide2.addTarget(R.id.textView);
+        slide2.setDuration(500);
+        set.addTransition(slide2);
+
+        set.setInterpolator(new DecelerateInterpolator());
+        return set;
     }
 
     public static Transition makeExitTransition(){
         Transition explode=new Explode();
-        explode.setStartDelay(500);
-        explode.setDuration(2000);
+        explode.setStartDelay(900);
+        explode.setDuration(1000);
         return explode;
     }
 
@@ -36,23 +59,26 @@ public final class TransitionUtils {
         TransitionSet set = new TransitionSet();
         set.setOrdering(TransitionSet.ORDERING_TOGETHER);
 
-        /*Transition recolor = new Recolor();
-        recolor.addTarget(R.id.activity_my_points_tv);
-        recolor.addTarget(context.getString(R.string.hello_world));
-        set.addTransition(recolor);*/
-
         Transition changeBounds = new ChangeBounds();
         changeBounds.addTarget(R.id.activity_my_points_tv);
-        //changeBounds.addTarget(context.getString(R.string.hello_world));
-        changeBounds.setDuration(300);
+        //changeBounds.addTarget(R.id.category_image_view);
+        changeBounds.setDuration(500);
         set.addTransition(changeBounds);
+
+        /*Transition changeBounds1 = new ChangeBounds();
+        changeBounds1.addTarget(R.id.category_image_view);
+        changeBounds1.setDuration(1000);
+        set.addTransition(changeBounds1);*/
+
 
         Transition textSize = new TextSizeTransition();
         textSize.addTarget(R.id.activity_my_points_tv);
-        textSize.setDuration(300);
+        textSize.setDuration(500);
         //textSize.addTarget(context.getString(R.string.hello_world));
         set.addTransition(textSize);
-
+        
+       
+        set.setInterpolator(new DecelerateInterpolator());
         return set;
     }
 

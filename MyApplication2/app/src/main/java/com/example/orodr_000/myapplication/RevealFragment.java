@@ -65,10 +65,19 @@ public class RevealFragment extends Fragment {
         animator.start();
 
     }
+    public void hideProgressBar(){
+        View progressbar=rootView.findViewById(R.id.progressBar2);
+        progressbar.setVisibility(View.INVISIBLE);
+    }
+
 
     public int getWidth(){
         View shape=rootView.findViewById(R.id.reveal_container);
         return shape.getWidth();
+    }
+    public void setColor(int color){
+        View shape=rootView.findViewById(R.id.reveal_container);
+        shape.setBackgroundColor(color);
     }
 
     public int getHeight(){

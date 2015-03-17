@@ -4,7 +4,7 @@
     tools:context="com.example.orodr_000.myapplication.RevealFragment"
     android:background="@color/transition"
     android:id="@+id/reveal_container"
-    android:visibility="invisible">
+    android:visibility="visible">
 
     <!-- TODO: Update blank fragment layout -->
     <com.example.orodr_000.myapplication.FontFitTextView android:layout_width="match_parent" android:layout_height="wrap_content"
@@ -16,5 +16,16 @@
         android:padding="10dp"
         android:layout_margin="10dp"
         android:gravity="center_horizontal" />
+
+    <ProgressBar
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        style="?android:attr/progressBarStyleLarge"
+        android:id="@+id/progressBar2"
+        android:layout_gravity="center"
+        android:layout_marginTop="80dp"
+        android:indeterminate="true" />
+
+
 
 </FrameLayout>

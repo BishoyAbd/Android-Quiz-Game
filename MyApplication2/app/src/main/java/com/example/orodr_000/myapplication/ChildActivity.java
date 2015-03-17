@@ -1,31 +1,47 @@
 package com.example.orodr_000.myapplication;
 
-import android.app.Activity;
-import android.app.ActivityOptions;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.support.v4.app.ActivityCompat;
+import android.support.v7.app.ActionBarActivity;
+import android.support.v7.widget.Toolbar;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
-import android.view.Window;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.io.File;
 
 
-public class ChildActivity extends Activity {
+public class ChildActivity extends ActionBarActivity {
     public static final String EXTRA_IMAGE = "ChildActivity:points";
     private static final String MyPREFERENCES = "MyPrefs" ;
+    private TransitionFragment transitionFragment;
+    View activity;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getWindow().requestFeature(Window.FEATURE_ACTION_BAR);
+        //getWindow().requestFeature(Window.FEATURE_ACTION_BAR);
+        activity=findViewById(R.id.transitionElement);
         //getActionBar().hide();
         setContentView(R.layout.activity_child);
+
+        //final Toolbar toolbar = (Toolbar) findViewById(R.id.category_image_view);
+        //toolbar.setBackgroundColor(getIntent().getIntExtra("Color",getResources().getColor(R.color.transition)));
+        //toolbar.setBackgroundResource(getResources().getIdentifier("@drawable/" + getIntent().getStringExtra("Image"), "drawable", getApplicationContext().getPackageName()));
+        //toolbar.setTitle("");
+
+        //setSupportActionBar(toolbar);
+        DisplayMetrics metrics = getResources().getDisplayMetrics();
+        final int width = metrics.widthPixels;
+        final int height = metrics.heightPixels;
+        transitionFragment = new TransitionFragment();
+        getFragmentManager().beginTransaction().replace(R.id.sample_content_fragment, transitionFragment).commit();
+        findViewById(R.id.transitionElement3).setVisibility(View.INVISIBLE);
 
         SharedPreferences sharedpreferences = getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
         TextView points=(TextView)findViewById(R.id.activity_my_points_tv);
@@ -36,7 +52,12 @@ public class ChildActivity extends Activity {
 
         points.setText(getIntent().getStringExtra(EXTRA_IMAGE));
         TextView highscore=(TextView)findViewById(R.id.highscore_tv);
-        String theme=getIntent().getStringExtra("Theme");
+
+        final String theme=getIntent().getStringExtra("Theme");
+        final ImageView imageView=(ImageView)findViewById(R.id.category_image_view);
+        Log.d("Image Tag:",getIntent().getStringExtra("Image"));
+        imageView.setImageResource(getResources().getIdentifier("@drawable/" + getIntent().getStringExtra("Image"), "drawable", getApplicationContext().getPackageName()));
+        imageView.setTag(getIntent().getStringExtra("Image"));
 
         if(Integer.valueOf(getIntent().getStringExtra(EXTRA_IMAGE))>getIntent().getIntExtra("Highscore",0)){
             SharedPreferences.Editor editor= sharedpreferences.edit();
@@ -46,7 +67,7 @@ public class ChildActivity extends Activity {
         }else{
             highscore.setText("Highscore: "+String.valueOf(getIntent().getIntExtra("Highscore",0)));
         }
-        Button okButton=(Button)findViewById(R.id.button2);
+        final Button okButton=(Button)findViewById(R.id.button2);
         okButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -55,6 +76,24 @@ public class ChildActivity extends Activity {
                 startActivity(intent);
                 ChildActivity.this.finish();
 
+            }
+        });
+        Button replayButton=(Button)findViewById(R.id.button8);
+        replayButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent=new Intent(ChildActivity.this,MainActivity.class);
+                intent.putExtra("File", theme);
+                intent.putExtra("Image", String.valueOf(imageView.getTag()));
+                intent.putExtra("Color",getIntent().getIntExtra("Color",getResources().getColor(R.color.transition)));
+                okButton.setVisibility(View.INVISIBLE);
+                v.setVisibility(View.INVISIBLE);
+                //toolbar.setVisibility(View.INVISIBLE);
+                transitionFragment.setColor(getIntent().getIntExtra("Color",getResources().getColor(R.color.transition)));
+                transitionFragment.changeText(theme);
+                transitionFragment.revealShape(width/2, height/2);
+                startActivity(intent);
+                ChildActivity.this.finish();
             }
         });
     }
@@ -67,6 +106,7 @@ public class ChildActivity extends Activity {
         startActivity(intent);
         ChildActivity.this.finish();
     }
+
 
    /* @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -90,22 +130,7 @@ public class ChildActivity extends Activity {
         return super.onOptionsItemSelected(item);
     }*/
 
-    public static void launch(Activity activity, View transitionView, String points,int highscore,String theme) {
-        //ActivityOptionsCompat options =ActivityOptionsCompat.makeSceneTransitionAnimation(activity, transitionView, EXTRA_IMAGE);
 
-        Intent intent = new Intent(activity, ChildActivity.class);
-        intent.putExtra(EXTRA_IMAGE, points);
-        intent.putExtra("Highscore",highscore);
-        intent.putExtra("Theme",theme);
-        //ActivityCompat.startActivity(activity, intent, options.toBundle());
-        try{ActivityCompat.startActivity(activity, intent, ActivityOptions.makeSceneTransitionAnimation(
-                activity, transitionView, transitionView.getTransitionName()).toBundle());}
-        catch(IllegalArgumentException e)
-        {
-            Log.d("Error","Illegal Argument");
-        }
-        activity.finish();
-    }
     @Override
     protected void onDestroy() {
         super.onDestroy();

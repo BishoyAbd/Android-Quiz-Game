@@ -62,6 +62,7 @@ public class CustomListAdapter extends BaseAdapter {
         int resID = rowView.getResources().getIdentifier("@drawable/"+b.getImage(), "drawable",rowView.getContext().getPackageName());
         holder.image.setImageResource(resID);
         holder.image.setTag(b.getImage());
+        //holder.image.setId(vibrant);
         return rowView;
     }
 

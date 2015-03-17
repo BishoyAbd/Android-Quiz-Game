@@ -482,7 +482,7 @@ public class ButtonActivity extends FragmentActivity {
             url = "https://ajax.googleapis.com/ajax/services/search/images?" +
                     "v=1.0&q=" + strSearchText + "&rsz=8&as_filetype=jpg";
 
-            final JsonObjectRequest jsonObjReq = new JsonObjectRequest(Request.Method.GET,
+            /*final JsonObjectRequest jsonObjReq = new JsonObjectRequest(Request.Method.GET,
                     url, null,
                     new Response.Listener<JSONObject>() {
 
@@ -506,7 +506,7 @@ public class ButtonActivity extends FragmentActivity {
 
                 }
             });
-            MySingleton.getInstance(activity).addToRequestQueue(jsonObjReq);
+            MySingleton.getInstance(activity).addToRequestQueue(jsonObjReq);*/
             return null;
         }
 

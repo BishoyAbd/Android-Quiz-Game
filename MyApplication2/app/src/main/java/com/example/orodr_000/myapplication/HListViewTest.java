@@ -4,10 +4,14 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
+import android.support.v7.graphics.Palette;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AdapterView;
@@ -146,6 +150,12 @@ public class HListViewTest extends FragmentActivity {
                 final Intent intent = new Intent(HListViewTest.this, MainActivity.class);
                 TextView fileview = (TextView) clickedView.findViewById(R.id.quiz_title);
                 ImageView imageview=(ImageView)clickedView.findViewById(R.id.quiz_image);
+                Bitmap myBitmap=((BitmapDrawable) imageview.getDrawable()).getBitmap();
+                Palette palette = Palette.generate(myBitmap);
+                int vibrant = palette.getVibrantColor(getResources().getColor(R.color.transition));
+                Log.d("Vibrant Color", String.valueOf(vibrant));
+
+                transitionFragment.setColor(vibrant);
                 final String file = fileview.getText().toString();
                 String theme = fileview.getHint().toString();
                 intent.putExtra("Theme", theme);
@@ -153,6 +163,7 @@ public class HListViewTest extends FragmentActivity {
                 intent.putExtra("startX", currentXPosition[0]);
                 intent.putExtra("startY", currentYPosition[0]);
                 intent.putExtra("Image", String.valueOf(imageview.getTag()));
+                intent.putExtra("Color",vibrant);
                 ConnectivityManager connManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
                 NetworkInfo mWifi = connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
 

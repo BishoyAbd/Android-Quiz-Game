@@ -27,8 +27,7 @@ dependencies {
     compile 'com.android.support:appcompat-v7:21.0.3'
     compile 'com.readystatesoftware.sqliteasset:sqliteassethelper:+'
     compile 'com.akexorcist:RoundCornerProgressBar:1.1.0'
-    compile 'com.hannesdorfmann.smoothprogressbar:library:1.0.0'
-    compile 'com.github.premnirmal:TextCounter:1.0.1@aar'
+    compile 'com.android.support:palette-v7:21.0.0'
 
 
 }

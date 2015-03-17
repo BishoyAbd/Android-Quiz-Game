@@ -78,6 +78,10 @@ public class TransitionFragment extends Fragment {
         View shape=rootView.findViewById(R.id.transition_container);
         return shape.getHeight();
     }
+    public void setColor(int color){
+        View shape=rootView.findViewById(R.id.transition_container);
+        shape.setBackgroundColor(color);
+    }
 
 
 }

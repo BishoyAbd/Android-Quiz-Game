@@ -8,6 +8,7 @@ import android.animation.ObjectAnimator;
 import android.animation.TypeEvaluator;
 import android.animation.ValueAnimator;
 import android.app.Activity;
+import android.app.ActivityOptions;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -17,7 +18,6 @@ import android.graphics.Color;
 import android.graphics.ColorFilter;
 import android.graphics.Paint;
 import android.graphics.PixelFormat;
-import android.graphics.PorterDuff;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.drawable.AnimationDrawable;
@@ -26,11 +26,13 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.util.Pair;
 import android.util.Property;
 import android.view.View;
 import android.view.ViewAnimationUtils;
@@ -38,7 +40,6 @@ import android.view.animation.DecelerateInterpolator;
 import android.view.animation.Interpolator;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.akexorcist.roundcornerprogressbar.RoundCornerProgressBar;
@@ -77,6 +78,7 @@ public class MainActivity extends ActionBarActivity {
     private boolean gameStart=false;
     private View animView;
     private TextView timer_tv;
+    private ImageView menuImage;
 
 
     private ImageView image;
@@ -106,13 +108,18 @@ public class MainActivity extends ActionBarActivity {
 
         myView = findViewById(R.id.transitionElement2);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar.setBackgroundColor(getIntent().getIntExtra("Color",getResources().getColor(R.color.transition)));
+        getWindow().setStatusBarColor(darkerColor(getIntent().getIntExtra("Color",getResources().getColor(R.color.transition))));
+        getWindow().setNavigationBarColor(darkerColor(getIntent().getIntExtra("Color",getResources().getColor(R.color.transition))));
         toolbar.setTitle("");
 
         setSupportActionBar(toolbar);
 
-        ImageView menuImage=(ImageView)findViewById(R.id.category_image_view);
+        menuImage=(ImageView)findViewById(R.id.category_image_view);
+
         menuImage.setImageResource(getResources().getIdentifier("@drawable/" + i.getStringExtra("Image"), "drawable", getApplicationContext().getPackageName()));
         TextView menuTitle=(TextView) findViewById(R.id.menu_title);
+        menuImage.setTag(i.getStringExtra("Image"));
         menuTitle.setText(strFile);
 
 
@@ -151,7 +158,9 @@ public class MainActivity extends ActionBarActivity {
         progress.setBackgroundColor(getResources().getColor(R.color.background));
         progress.setProgressColor(Color.parseColor("#4CAF50"));
 
+
         timer_tv=(TextView)findViewById(R.id.timer_tv);
+        timer_tv.setTextColor(Color.BLACK);
         //progress.getProgressDrawable().setColorFilter(Color.parseColor("#4CAF50"), PorterDuff.Mode.SRC_ATOP);
 
         android.app.FragmentManager fm = getFragmentManager();
@@ -167,6 +176,7 @@ public class MainActivity extends ActionBarActivity {
         FragmentManager fragmentManager=getSupportFragmentManager();
         revealFragment1=(RevealFragment)fragmentManager.findFragmentById(R.id.fragment3);
         FragmentTransaction transaction=getSupportFragmentManager().beginTransaction();
+        revealFragment1.setColor(getIntent().getIntExtra("Color",getResources().getColor(R.color.transition)));
         transaction.show(revealFragment1);
         transaction.commit();
 
@@ -189,13 +199,37 @@ public class MainActivity extends ActionBarActivity {
 
     }
 
-    public void addTime(long addedTime) {
+    public int darkerColor(int color){
+        float[] hsv = new float[3];
+        Color.colorToHSV(color, hsv);
+        hsv[2] *= 0.8f; // value component
+        color = Color.HSVToColor(hsv);
+        return color;
+    }
+
+    public void addTime() {
+        long addedTime;
+        if(points>0) {
+            addedTime = (long) (10000/Math.log10(points));
+        }
+        else{
+            addedTime=5000;
+        }
         remainingTime=remainingTime + addedTime;
+        if(remainingTime>45000) remainingTime=45000;
         showTimer(remainingTime);
     }
 
-    public void decreaseTime(long decTime) {
+    public void decreaseTime() {
+        long decTime;
+        if(points>0) {
+            decTime = (long) (Math.log10(points)*1500);
+        }
+        else{
+            decTime=3000;
+        }
         remainingTime=remainingTime - decTime;
+        if(remainingTime<0) remainingTime=0;
         showTimer(remainingTime);
     }
 
@@ -222,10 +256,6 @@ public class MainActivity extends ActionBarActivity {
                     //progress.getProgressDrawable().setColorFilter(Color.parseColor("#4CAF50"), PorterDuff.Mode.SRC_IN);
                     progress.setProgressColor(Color.parseColor("#4CAF50"));
                 }
-                if(remainingTime<23500){
-                    timer_tv.setTextColor(Color.BLACK);
-                }
-
             }
 
 
@@ -247,8 +277,24 @@ public class MainActivity extends ActionBarActivity {
                 int highscore=Integer.parseInt(sharedpreferences.getString(strFile,"0"));
                 getWindow().setExitTransition(TransitionUtils.makeExitTransition());
                 myData.clear();
-                ChildActivity.launch(MainActivity.this, findViewById(R.id.activity_my_points_tv), String.valueOf(points),highscore,strFile);
 
+                Intent intent = new Intent(activity, ChildActivity.class);
+                intent.putExtra("ChildActivity:points", String.valueOf(points));
+                intent.putExtra("Highscore",highscore);
+                intent.putExtra("Theme", strFile);
+                intent.putExtra("Image", String.valueOf(menuImage.getTag()));
+                intent.putExtra("Color",getIntent().getIntExtra("Color",getResources().getColor(R.color.transition)));
+
+
+                //ActivityOptions options=ActivityOptions.makeSceneTransitionAnimation(activity, Pair.create(findViewById(R.id.activity_my_points_tv), findViewById(R.id.activity_my_points_tv).getTransitionName()),Pair.create(findViewById(R.id.category_image_view), findViewById(R.id.category_image_view).getTransitionName()));
+                ActivityOptions options=ActivityOptions.makeSceneTransitionAnimation(activity,findViewById(R.id.activity_my_points_tv), findViewById(R.id.activity_my_points_tv).getTransitionName());
+                try{
+                    ActivityCompat.startActivity(activity, intent, options.toBundle());}
+                catch(IllegalArgumentException e)
+                {
+                    Log.d("Error","Illegal Argument");
+                }
+                activity.finish();
 
                 /*AlertDialog.Builder builder = new AlertDialog.Builder(activity);
 
@@ -325,6 +371,7 @@ public class MainActivity extends ActionBarActivity {
 
     public void buttonClick(View v) {
         //Glide.clear(image);
+        decreaseTime();
         //loadImage();
 
     }
@@ -362,11 +409,7 @@ public class MainActivity extends ActionBarActivity {
     }
 
     public int AddPoints() {
-        if (remainingTime > 40000) {
-            addTime(45000 - remainingTime);
-        } else {
-            addTime(5000);
-        }
+        addTime();
         if (points < 1000) {
             return 100;
 
@@ -384,7 +427,7 @@ public class MainActivity extends ActionBarActivity {
     }
 
     public int DecreasePoints() {
-        //decreaseTime(3000);
+        decreaseTime();
         if (points < 1000) {
             return -50;
         } else {
@@ -443,9 +486,13 @@ public class MainActivity extends ActionBarActivity {
             imageAnimation = (AnimationDrawable) image.getBackground();
             image.setImageBitmap(null);
             imageAnimation.run();
+            progress.setProgress((int) remainingTime / 1000);
+            timer_tv.setText(String.valueOf((int) remainingTime / 1000));
+            countDownTimer.cancel();
             checkIfAnimationDone(imageAnimation);
         }else{
             progress.setProgress((int) remainingTime / 1000);
+            timer_tv.setText(String.valueOf((int) remainingTime / 1000));
             countDownTimer.cancel();
             Log.d("Animation","size is less than 1");
             image.setBackgroundResource(R.drawable.loadanim);
@@ -489,13 +536,14 @@ public class MainActivity extends ActionBarActivity {
 
     private void checkIfAnimationDone(AnimationDrawable anim){
         final AnimationDrawable a = anim;
-        int timeBetweenChecks = 300;
+        int timeBetweenChecks = 200;
         Handler h = new Handler();
         h.postDelayed(new Runnable(){
             public void run(){
                 if (a.getCurrent() != a.getFrame(a.getNumberOfFrames() - 1)){
                     checkIfAnimationDone(a);
                 } else{
+                    showTimer(remainingTime);
                     loadImage();
                 }
             }
@@ -598,6 +646,7 @@ public class MainActivity extends ActionBarActivity {
                 anim.setDuration(2000);
                 anim.start();*/
                 //revealFragment1.changeText(strFile);
+                revealFragment1.hideProgressBar();
                 revealFragment1.hideShape(myView.getWidth() / 2, myView.getHeight() / 2);
             }
         }, 10);
@@ -704,7 +753,7 @@ public class MainActivity extends ActionBarActivity {
 
     }
     public void getImageFromDB(String file,String name){
-        String returnImage= menuDBoperation.getUrls(file,name);
+        String returnImage= menuDBoperation.getUrls(file, name);
         String[] returnArray=returnImage.split(",");
         int randInt = new Random().nextInt(returnArray.length);
         final String mImage_url=returnArray[randInt];

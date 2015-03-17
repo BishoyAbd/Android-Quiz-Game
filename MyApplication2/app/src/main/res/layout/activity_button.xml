@@ -48,7 +48,7 @@
                 android:layout_gravity="center_vertical|left"
                 android:layout_marginLeft="10dp"
                 android:id="@+id/category_image_view"
-                />
+                android:transitionName="menu_image" />
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -80,7 +80,7 @@
             android:layout_alignParentBottom="false"
             android:layout_alignParentRight="true"
             android:layout_margin="7dp"
-            view2:cardCornerRadius="4dp"
+            view2:cardCornerRadius="0dp"
             android:layout_below="@+id/toolbar"
             android:layout_above="@+id/progressbar_view">
             <ImageView
@@ -140,10 +140,7 @@
                 app:rcBackgroundRadius="0dp"
                 app:rcProgress="45"
                 app:rcMax="45"
-                android:layout_alignParentBottom="true"
-                android:layout_alignParentTop="true"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentRight="true"></com.akexorcist.roundcornerprogressbar.RoundCornerProgressBar>
+                />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -153,8 +150,11 @@
                 android:id="@+id/timer_tv"
                 android:textColor="@color/background"
                 android:layout_gravity="center"
-                android:textSize="@dimen/text_size"
-                android:layout_centerHorizontal="true" />
+                android:textSize="20sp"
+                android:layout_centerHorizontal="true"
+                android:layout_alignTop="@+id/progressBar"
+                android:layout_alignBottom="@+id/progressBar"
+                android:gravity="center" />
 
 
         </RelativeLayout>
