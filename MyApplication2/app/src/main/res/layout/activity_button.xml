@@ -180,7 +180,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="5dp">
-                    <com.example.orodr_000.myapplication.FontFitButton
+                    <Button
                         android:layout_width="0.0dip"
                         android:layout_height="fill_parent"
                         android:text="New Button"
@@ -191,22 +191,28 @@
                         android:layout_weight="1.0"
                         android:layout_marginRight="5dp"
                         android:gravity="center"
-                        android:textAllCaps="true"
+                        android:textAllCaps="false"
                         android:shadowColor="@color/icons"
-                        android:padding="2dp" />
-                    <com.example.orodr_000.myapplication.FontFitButton
+                        android:padding="3dp"
+                        android:textSize="14sp"
+                        android:lines="3"
+                        android:maxLines="5" />
+                    <Button
                         android:layout_width="0.0dip"
                         android:layout_height="fill_parent"
                         android:text="New Button"
                         android:id="@+id/activity_my_variant2_btn"
                         android:layout_marginRight="5dp"
                         android:onClick="AnswerClick"
-                        android:textAllCaps="true"
+                        android:textAllCaps="false"
                         android:background="@color/blue_button"
                         android:layout_weight="1.0"
                         android:layout_marginLeft="5dp"
                         android:gravity="center"
-                        android:padding="2dp" />
+                        android:padding="3dp"
+                        android:textSize="14sp"
+                        android:lines="3"
+                        android:maxLines="5" />
                 </LinearLayout>
                 <LinearLayout
                     android:orientation="horizontal"
@@ -214,33 +220,39 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="5dp">
 
-                    <com.example.orodr_000.myapplication.FontFitButton
+                    <Button
                         android:layout_width="0.0dip"
                         android:layout_height="fill_parent"
                         android:text="New Button"
                         android:id="@+id/activity_my_variant3_btn"
                         android:onClick="AnswerClick"
                         android:layout_marginLeft="5dp"
-                        android:textAllCaps="true"
+                        android:textAllCaps="false"
                         android:background="@color/yellow_button"
                         android:layout_weight="1.0"
                         android:layout_marginRight="5dp"
                         android:gravity="center"
-                        android:padding="2dp" />
+                        android:padding="3dp"
+                        android:textSize="14sp"
+                        android:lines="3"
+                        android:maxLines="5" />
 
-                    <com.example.orodr_000.myapplication.FontFitButton
+                    <Button
                         android:layout_width="0.0dip"
                         android:layout_height="fill_parent"
                         android:text="New Button"
                         android:id="@+id/activity_my_variant4_btn"
                         android:onClick="AnswerClick"
-                        android:textAllCaps="true"
+                        android:textAllCaps="false"
                         android:layout_marginRight="5dp"
                         android:background="@color/green_button"
                         android:layout_weight="1.0"
                         android:layout_marginLeft="5dp"
                         android:gravity="center"
-                        android:padding="2dp" />
+                        android:padding="3dp"
+                        android:textSize="14sp"
+                        android:lines="3"
+                        android:maxLines="5" />
 
                 </LinearLayout>
             </LinearLayout>
@@ -273,7 +285,6 @@
             android:layout_alignLeft="@+id/buttons"
             android:layout_alignRight="@+id/buttons"
             android:layout_marginBottom="5dp" />
-
 
 
     </RelativeLayout>

@@ -8,6 +8,7 @@ import android.animation.ObjectAnimator;
 import android.animation.TypeEvaluator;
 import android.animation.ValueAnimator;
 import android.app.Activity;
+import android.app.ActivityManager;
 import android.app.ActivityOptions;
 import android.content.Context;
 import android.content.Intent;
@@ -21,6 +22,7 @@ import android.graphics.PixelFormat;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.drawable.AnimationDrawable;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -32,7 +34,6 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.util.Pair;
 import android.util.Property;
 import android.view.View;
 import android.view.ViewAnimationUtils;
@@ -91,18 +92,21 @@ public class MainActivity extends ActionBarActivity {
     private View myView;
     private boolean imageIsLoaded=true;
     private MenuItemOperations menuDBoperation;
+    private String locale;
+    private boolean paused=false;
+
 
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        //getWindow().requestFeature(Window.FEATURE_CONTENT_TRANSITIONS);
         setContentView(R.layout.activity_button);
+        getWindow().setExitTransition(TransitionUtils.makeExitTransition());
         Intent i = getIntent();
         Log.d("Image",i.getStringExtra("Image"));
-        strFile = i.getStringExtra("File");
-        //getActionBar().setTitle(strFile);
-        str_File=strFile.replaceAll(" ","_");
+
         //startX=(int)i.getFloatExtra("startX",0);
         //startY=(int)i.getFloatExtra("startY",0);
 
@@ -120,7 +124,7 @@ public class MainActivity extends ActionBarActivity {
         menuImage.setImageResource(getResources().getIdentifier("@drawable/" + i.getStringExtra("Image"), "drawable", getApplicationContext().getPackageName()));
         TextView menuTitle=(TextView) findViewById(R.id.menu_title);
         menuImage.setTag(i.getStringExtra("Image"));
-        menuTitle.setText(strFile);
+
 
 
         animView = findViewById(R.id.animView);
@@ -133,14 +137,15 @@ public class MainActivity extends ActionBarActivity {
         sharedpreferences = getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
 
         image =(ImageView)findViewById(R.id.view);
-        var1 = (FontFitButton) findViewById(R.id.activity_my_variant1_btn);
-        var2 = (FontFitButton) findViewById(R.id.activity_my_variant2_btn);
-        var3 = (FontFitButton) findViewById(R.id.activity_my_variant3_btn);
-        var4 = (FontFitButton) findViewById(R.id.activity_my_variant4_btn);
+        var1 = (Button) findViewById(R.id.activity_my_variant1_btn);
+        var2 = (Button) findViewById(R.id.activity_my_variant2_btn);
+        var3 = (Button) findViewById(R.id.activity_my_variant3_btn);
+        var4 = (Button) findViewById(R.id.activity_my_variant4_btn);
         var1.setEnabled(false);
         var2.setEnabled(false);
         var3.setEnabled(false);
         var4.setEnabled(false);
+        image.setEnabled(false);
         var1.setText("");
         var2.setText("");
         var3.setText("");
@@ -180,6 +185,9 @@ public class MainActivity extends ActionBarActivity {
         transaction.show(revealFragment1);
         transaction.commit();
 
+        Bitmap icon=((BitmapDrawable) getDrawable(R.drawable.ic_launcher)).getBitmap();
+        ActivityManager.TaskDescription taskDescription = new ActivityManager.TaskDescription(getString(R.string.app_name),icon,darkerColor(getIntent().getIntExtra("Color", getResources().getColor(R.color.transition))));
+        this.setTaskDescription(taskDescription);
 
 
         /*try {
@@ -187,9 +195,14 @@ public class MainActivity extends ActionBarActivity {
         } catch (IOException e) {
             e.printStackTrace();
         }*/
+        locale = getResources().getConfiguration().locale.getDisplayLanguage();
         menuDBoperation=new MenuItemOperations(this);
         menuDBoperation.open();
-        strList=menuDBoperation.getAllVariants(str_File);
+        strFile =menuDBoperation.getDefaultTableName(locale, i.getStringExtra("File"));
+        menuTitle.setText(i.getStringExtra("File"));
+        //getActionBar().setTitle(strFile);
+        str_File=strFile.replaceAll(" ","_");
+        strList=menuDBoperation.getAllVariants(locale,str_File);
         points = 0;
         activity = this;
 
@@ -273,28 +286,39 @@ public class MainActivity extends ActionBarActivity {
                 var2.setEnabled(false);
                 var3.setEnabled(false);
                 var4.setEnabled(false);
+                image.setEnabled(false);
+
 
                 int highscore=Integer.parseInt(sharedpreferences.getString(strFile,"0"));
-                getWindow().setExitTransition(TransitionUtils.makeExitTransition());
+                //getWindow().setExitTransition(TransitionUtils.makeExitTransition());
                 myData.clear();
 
-                Intent intent = new Intent(activity, ChildActivity.class);
+                final Intent intent = new Intent(activity, ChildActivity.class);
                 intent.putExtra("ChildActivity:points", String.valueOf(points));
                 intent.putExtra("Highscore",highscore);
                 intent.putExtra("Theme", strFile);
+                intent.putExtra("Name",getIntent().getStringExtra("File"));
                 intent.putExtra("Image", String.valueOf(menuImage.getTag()));
                 intent.putExtra("Color",getIntent().getIntExtra("Color",getResources().getColor(R.color.transition)));
 
 
+
                 //ActivityOptions options=ActivityOptions.makeSceneTransitionAnimation(activity, Pair.create(findViewById(R.id.activity_my_points_tv), findViewById(R.id.activity_my_points_tv).getTransitionName()),Pair.create(findViewById(R.id.category_image_view), findViewById(R.id.category_image_view).getTransitionName()));
-                ActivityOptions options=ActivityOptions.makeSceneTransitionAnimation(activity,findViewById(R.id.activity_my_points_tv), findViewById(R.id.activity_my_points_tv).getTransitionName());
+                final ActivityOptions options=ActivityOptions.makeSceneTransitionAnimation(activity,findViewById(R.id.activity_my_points_tv), findViewById(R.id.activity_my_points_tv).getTransitionName());
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 try{
-                    ActivityCompat.startActivity(activity, intent, options.toBundle());}
+
+
+                    ActivityCompat.startActivity(activity, intent, options.toBundle());
+                    //activity.finishAfterTransition();
+                    ActivityCompat.finishAfterTransition(activity);
+                }
                 catch(IllegalArgumentException e)
                 {
                     Log.d("Error","Illegal Argument");
                 }
-                activity.finish();
+
 
                 /*AlertDialog.Builder builder = new AlertDialog.Builder(activity);
 
@@ -376,23 +400,75 @@ public class MainActivity extends ActionBarActivity {
 
     }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if(!tickPlusDrawable.isPause() && !tickPlusDrawable.isPlay()){
+            imageAnimation.stop();
+            Log.d("Pause","Animation Stopped");
+
+        }
+
+        if(!paused){
+            if(revealFragment1.isShapeVisible()){
+
+            }
+            else{
+                onPauseClick(pauseFragment.getView());
+            }
+        Log.d("Pause","On Pause Click");}
+        /*tickPlusDrawable.animatePlay();
+        if(countDownTimer!=null)
+            countDownTimer.cancel();
+
+        var1.setEnabled(false);
+        var2.setEnabled(false);
+        var3.setEnabled(false);
+        var4.setEnabled(false);
+        image.setEnabled(false);*/
+
+        Log.d("Activity Pause","Pressed");
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        if(imageAnimation!=null ) {
+            Log.d("Pause","Animation Resumed");
+            //onPauseClick(pauseFragment.getView());
+            animView.setEnabled(true);
+            //showTimer(remainingTime);
+
+        }
+
+
+
+    }
+
     public void onPauseClick(View v){
         android.app.FragmentTransaction ft = getFragmentManager().beginTransaction();
         ft.setCustomAnimations(R.anim.slide_in_top,
                 R.anim.slide_out_top);
         if (pauseFragment.isHidden()) {
             ft.show(pauseFragment);
-
+            paused=true;
             tickPlusDrawable.animatePlay();
-            countDownTimer.cancel();
+            if(countDownTimer!=null)
+                countDownTimer.cancel();
             var1.setEnabled(false);
             var2.setEnabled(false);
+            Log.d("Pause","is Shown");
             var3.setEnabled(false);
             var4.setEnabled(false);
             image.setEnabled(false);
 
         } else {
+            paused=false;
+            loadImage();
             ft.hide(pauseFragment);
+            Log.d("Pause","is Hidden");
             tickPlusDrawable.animatePause();
             showTimer(remainingTime);
             var1.setEnabled(true);
@@ -452,6 +528,7 @@ public class MainActivity extends ActionBarActivity {
         var2.setEnabled(false);
         var3.setEnabled(false);
         var4.setEnabled(false);
+        image.setEnabled(false);
         int changePoints;
         int counter = 0;
         answ = myData.get(counter).getStrAnswer();
@@ -488,7 +565,8 @@ public class MainActivity extends ActionBarActivity {
             imageAnimation.run();
             progress.setProgress((int) remainingTime / 1000);
             timer_tv.setText(String.valueOf((int) remainingTime / 1000));
-            countDownTimer.cancel();
+            //countDownTimer.cancel();
+            animView.setEnabled(false);
             checkIfAnimationDone(imageAnimation);
         }else{
             progress.setProgress((int) remainingTime / 1000);
@@ -497,6 +575,7 @@ public class MainActivity extends ActionBarActivity {
             Log.d("Animation","size is less than 1");
             image.setBackgroundResource(R.drawable.loadanim);
             imageAnimation = (AnimationDrawable) image.getBackground();
+            animView.setEnabled(false);
             image.setImageBitmap(null);
             imageAnimation.start();
             imageIsLoaded=false;
@@ -507,6 +586,7 @@ public class MainActivity extends ActionBarActivity {
             isOverLimit=false;
             new showImageTask().execute();}
     }
+
     public void AnimateText(final TextView view,final int start, final int end){
         ValueAnimator animator = new ValueAnimator();
         animator.setObjectValues(start,end);
@@ -543,9 +623,11 @@ public class MainActivity extends ActionBarActivity {
                 if (a.getCurrent() != a.getFrame(a.getNumberOfFrames() - 1)){
                     checkIfAnimationDone(a);
                 } else{
+                    animView.setEnabled(true);
                     showTimer(remainingTime);
                     loadImage();
                 }
+
             }
         }, timeBetweenChecks);
     }
@@ -561,6 +643,7 @@ public class MainActivity extends ActionBarActivity {
 
         try{
         if (imageAnimation!=null && imageAnimation.isRunning()) {
+            animView.setEnabled(true);
             imageAnimation.stop();
             if(countDownTimer!=null && pauseFragment.isHidden()){
                 showTimer(remainingTime);
@@ -577,6 +660,7 @@ public class MainActivity extends ActionBarActivity {
         var2.setEnabled(true);
         var3.setEnabled(true);
         var4.setEnabled(true);
+        image.setEnabled(true);
         }catch (IndexOutOfBoundsException e){
             Log.d("Error","Out of Bounds");
             new showImageTask().execute();
@@ -659,7 +743,7 @@ public class MainActivity extends ActionBarActivity {
 
             //@Override
           //  public void run() {
-                revealFragment1.changeText(strFile);
+                revealFragment1.changeText(getIntent().getStringExtra("File"));
           //  }
         //},10);
 
@@ -753,61 +837,64 @@ public class MainActivity extends ActionBarActivity {
 
     }
     public void getImageFromDB(String file,String name){
-        String returnImage= menuDBoperation.getUrls(file, name);
+        String returnImage= menuDBoperation.getUrls(locale,file, name);
         String[] returnArray=returnImage.split(",");
         int randInt = new Random().nextInt(returnArray.length);
         final String mImage_url=returnArray[randInt];
         activity.runOnUiThread(new Runnable() {
             public void run() {
                 //Toast.makeText(activity, "Hello", Toast.LENGTH_SHORT).show();
-                Glide.with(activity).load(mImage_url).asBitmap().into(new SimpleTarget<Bitmap>(500, 500) {
-                    @Override
-                    public void onResourceReady(Bitmap bitmap, GlideAnimation anim) {
-                        try{
+                try {
+                    Glide.with(activity).load(mImage_url).asBitmap().into(new SimpleTarget<Bitmap>(500, 500) {
+                        @Override
+                        public void onResourceReady(Bitmap bitmap, GlideAnimation anim) {
+                            try {
 
-                            myData.get(myData.size()-1).setImage(bitmap);
-                            Log.d("Ok","Image Added; Array Size: "+myData.size());
-                            if(!gameStart){
-                                loadingAnimation(myView);
-                                gameStart=true;
-                                try {
-                                    long startTime = 46 * 1000;
-                                    showTimer(startTime);
-                                } catch (NumberFormatException e) {
-                                    e.printStackTrace();
+                                myData.get(myData.size() - 1).setImage(bitmap);
+                                Log.d("Ok", "Image Added; Array Size: " + myData.size());
+                                if (!gameStart) {
+                                    loadingAnimation(myView);
+                                    gameStart = true;
+                                    try {
+                                        long startTime = 46 * 1000;
+                                        showTimer(startTime);
+                                    } catch (NumberFormatException e) {
+                                        e.printStackTrace();
+                                    }
+                                    animView.setEnabled(true);
+                                    loadImage();
                                 }
-                                animView.setEnabled(true);
-                                loadImage();
+                                if (!imageIsLoaded) {
+                                    imageIsLoaded = true;
+                                    loadImage();
+                                }
+                                if (myData.size() < 20) {
+                                    NextImage();
+                                } else {
+                                    isOverLimit = true;
+                                }
+                            } catch (ArrayIndexOutOfBoundsException e) {
+                                Log.d("Error", "Out of Bounds");
+                                NextImage();
                             }
-                            if(!imageIsLoaded) {
-                                imageIsLoaded = true;
-                                loadImage();
-                            }
-                            if(myData.size()<20){
-                                NextImage();}
-                            else {
-                                isOverLimit=true;
-                            }
-                        }
-                        catch(ArrayIndexOutOfBoundsException e){
-                            Log.d("Error","Out of Bounds");
-                            NextImage();
-                        }
-                    }
-
-                    @Override
-                    public void onLoadFailed(Exception e, Drawable errorDrawable) {
-                        try {
-                            myData.remove(myData.size() - 1);
-                            Log.d("Error", "Image Load Error; Array Size: " + myData.size());
-                            NextImage();
-                        }catch(ArrayIndexOutOfBoundsException ex){
-                            Log.d("Error","Out of Bounds");
-                            NextImage();
                         }
 
-                    }
-                });
+                        @Override
+                        public void onLoadFailed(Exception e, Drawable errorDrawable) {
+                            try {
+                                myData.remove(myData.size() - 1);
+                                Log.d("Error", "Image Load Error; Array Size: " + myData.size());
+                                NextImage();
+                            } catch (ArrayIndexOutOfBoundsException ex) {
+                                Log.d("Error", "Out of Bounds");
+                                NextImage();
+                            }
+
+                        }
+                    });
+                }catch(IllegalArgumentException e){
+                    e.printStackTrace();
+                }
             }
         });
 
@@ -1008,6 +1095,11 @@ public class MainActivity extends ActionBarActivity {
         private Paint mLinePaint;
         private Paint mBackgroundPaint;
 
+        private boolean isTick=false;
+        private boolean isCross=false;
+        private boolean isPause=true;
+        private boolean isPlay=false;
+
         private float[] mPoints = new float[8];
         private final RectF mBounds = new RectF();
 
@@ -1104,7 +1196,10 @@ public class MainActivity extends ActionBarActivity {
             cx=animView.getWidth()/2;
             cy=0;
             int initialRadius =  Math.max(animView.getWidth(), animView.getHeight())*2;
-
+            isTick=true;
+            isCross=false;
+            isPause=false;
+            isPlay=false;
             Animator anim;
             anim = ViewAnimationUtils.createCircularReveal(animView, cx, cy, 0, initialRadius);
             set.playTogether(
@@ -1152,6 +1247,10 @@ public class MainActivity extends ActionBarActivity {
             int cy;
             cx=animView.getWidth()/2;
             cy=0;
+            isTick=false;
+            isCross=true;
+            isPause=false;
+            isPlay=false;
             int initialRadius =  Math.max(animView.getWidth(), animView.getHeight())*2;
 
             Animator anim;
@@ -1202,6 +1301,10 @@ public class MainActivity extends ActionBarActivity {
             int cy;
             cx=animView.getWidth()/2;
             cy=animView.getHeight();
+            isTick=false;
+            isCross=false;
+            isPause=true;
+            isPlay=false;
             int initialRadius =  Math.max(animView.getWidth(), animView.getHeight())*2;
 
             Animator anim;
@@ -1240,12 +1343,32 @@ public class MainActivity extends ActionBarActivity {
         }
 
 
+        public boolean isTick() {
+            return isTick;
+        }
+
+        public boolean isCross() {
+            return isCross;
+        }
+
+        public boolean isPause() {
+            return isPause;
+        }
+
+        public boolean isPlay() {
+            return isPlay;
+        }
+
         public void animatePlay() {
             AnimatorSet set = new AnimatorSet();
             int cx;
             int cy;
             cx=animView.getWidth()/2;
             cy=animView.getHeight();
+            isTick=false;
+            isCross=false;
+            isPause=false;
+            isPlay=true;
             int initialRadius =  Math.max(animView.getWidth(), animView.getHeight())*2;
 
             Animator anim;

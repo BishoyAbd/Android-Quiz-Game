@@ -8,6 +8,7 @@ import android.transition.Transition;
 import android.transition.TransitionSet;
 import android.view.Gravity;
 import android.view.animation.DecelerateInterpolator;
+import android.view.animation.PathInterpolator;
 
 public final class TransitionUtils {
 
@@ -76,9 +77,8 @@ public final class TransitionUtils {
         textSize.setDuration(500);
         //textSize.addTarget(context.getString(R.string.hello_world));
         set.addTransition(textSize);
-        
-       
-        set.setInterpolator(new DecelerateInterpolator());
+
+        set.setInterpolator(new PathInterpolator(0,0,1,1));
         return set;
     }
 

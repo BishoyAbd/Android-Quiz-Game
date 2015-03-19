@@ -9,6 +9,7 @@ import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.jar.Attributes;
 
 
 public class MenuItemOperations {
@@ -30,7 +31,22 @@ public class MenuItemOperations {
 
 
 
-    public MenuItem getMenuItem(int i){
+    public MenuItem getMenuItem(int i,String locale){
+        switch (locale){
+            case "українська":
+                MenuItem_TABLE_COLUMNS[0]=MyDatabase.ITEM_NAME_UA;
+                break;
+            case "français":
+                MenuItem_TABLE_COLUMNS[0]=MyDatabase.ITEM_NAME_FR;
+                break;
+            case "русский":
+                MenuItem_TABLE_COLUMNS[0]=MyDatabase.ITEM_NAME_RU;
+                break;
+            case "English":
+            default:
+                MenuItem_TABLE_COLUMNS[0]=MyDatabase.ITEM_NAME;
+                break;
+        }
         Cursor cursor = database.query(MyDatabase.MENU_ITEMS,
                 MenuItem_TABLE_COLUMNS, MyDatabase.ITEM_ID + " = "
                         + i, null, null, null, null);
@@ -40,6 +56,40 @@ public class MenuItemOperations {
         MenuItem newComment = parseMenuItem(cursor);
         cursor.close();
         return newComment;
+    }
+    public String getDefaultTableName(String locale,String Name){
+        String result=null;
+        Cursor c;
+
+        switch (locale){
+            case "українська":
+                c=database.rawQuery("SELECT Name FROM menu WHERE Name_ua=?",new String[]{Name});
+                break;
+            case "français":
+                c=database.rawQuery("SELECT Name FROM menu WHERE Name_fr=?",new String[]{Name});
+
+                break;
+            case "русский":
+                c=database.rawQuery("SELECT Name FROM menu WHERE Name_ru=?",new String[]{Name});
+
+                break;
+            case "English":
+            default:
+                //c=database.rawQuery("SELECT Name FROM menu WHERE Name=?",new String[]{Name});
+            return Name;
+
+        }
+        if(c.getCount()==0)
+        {
+            Log.d("Error", "No records found");
+            return null;
+        }
+        while(c.moveToNext()){
+            result=c.getString(0);
+        }
+        c.close();
+        return result;
+
     }
 
     public Cursor getEmployees() {
@@ -61,9 +111,25 @@ public class MenuItemOperations {
 
 
 
-    public List<String> getAllVariants(String file){
+    public List<String> getAllVariants(String locale,String file){
         List<String> strVariants=new ArrayList<>();
-        Cursor c=database.rawQuery("SELECT Name FROM "+file, null);
+        Cursor c;
+        switch (locale){
+            case "українська":
+                c=database.rawQuery("SELECT Name_ua FROM "+file, null);
+                break;
+            case "français":
+                c=database.rawQuery("SELECT Name_fr FROM "+file, null);
+                break;
+            case "русский":
+                c=database.rawQuery("SELECT Name_ru FROM "+file, null);
+                break;
+            case "English":
+            default:
+                c=database.rawQuery("SELECT Name FROM "+file, null);
+                break;
+        }
+
         Log.d("",String.valueOf(database.getMaximumSize()));
         if(c.getCount()==0)
         {
@@ -80,9 +146,25 @@ public class MenuItemOperations {
         c.close();
         return strVariants;
     }
-    public String getUrls(String file,String Name){
+    public String getUrls(String locale,String file,String Name){
         String result=null;
-        Cursor c=database.rawQuery("SELECT Urls FROM "+file+" WHERE Name=?",new String[]{Name});
+        Cursor c;
+        switch (locale){
+            case "українська":
+                c=database.rawQuery("SELECT Urls FROM "+file+" WHERE Name_ua=?",new String[]{Name});
+                break;
+            case "français":
+                c=database.rawQuery("SELECT Urls FROM "+file+" WHERE Name_fr=?",new String[]{Name});
+                break;
+            case "русский":
+                c=database.rawQuery("SELECT Urls FROM "+file+" WHERE Name_ru=?",new String[]{Name});
+                break;
+            case "English":
+            default:
+                c=database.rawQuery("SELECT Urls FROM "+file+" WHERE Name=?",new String[]{Name});
+                break;
+        }
+
         if(c.getCount()==0)
         {
             Log.d("Error", "No records found");

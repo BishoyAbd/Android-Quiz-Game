@@ -24,7 +24,7 @@ dependencies {
     compile 'com.squareup.picasso:picasso:2.4.0'
     compile 'com.github.bumptech.glide:glide:3.4.+'
     compile 'com.koushikdutta.ion:ion:2.+'
-    compile 'com.android.support:appcompat-v7:21.0.3'
+    compile 'com.android.support:appcompat-v7:22.0.0'
     compile 'com.readystatesoftware.sqliteasset:sqliteassethelper:+'
     compile 'com.akexorcist:RoundCornerProgressBar:1.1.0'
     compile 'com.android.support:palette-v7:21.0.0'

@@ -78,13 +78,16 @@ public class HListViewTest extends FragmentActivity {
         }*/
         MenuItemOperations menuDBoperation = new MenuItemOperations(this);
         menuDBoperation.open();
+        String locale = getResources().getConfiguration().locale.getDisplayLanguage();
+        Log.d("Locale",locale);
 
         for(int i=0;i< menuDBoperation.getEmployees().getCount();i++){
+
             MenuItem b=new MenuItem();
-            b.setName(menuDBoperation.getMenuItem(i + 1).getName());
-            b.setPoints(sharedPreferences.getString(menuDBoperation.getMenuItem(i + 1).getName(),"0"));
-            b.setTheme(menuDBoperation.getMenuItem(i + 1).getTheme());
-            b.setImage(menuDBoperation.getMenuItem(i + 1).getImage());
+            b.setName(menuDBoperation.getMenuItem(i + 1,locale).getName());
+            b.setPoints(sharedPreferences.getString(menuDBoperation.getDefaultTableName(locale,b.getName()),"0"));
+            b.setTheme(menuDBoperation.getMenuItem(i + 1,locale).getTheme());
+            b.setImage(menuDBoperation.getMenuItem(i + 1,locale).getImage());
             buttonList.add(b);
         }
         adapter = new CustomListAdapter(this, buttonList);

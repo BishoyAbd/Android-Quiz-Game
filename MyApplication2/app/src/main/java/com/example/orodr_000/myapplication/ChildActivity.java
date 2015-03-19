@@ -9,6 +9,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -25,10 +26,9 @@ public class ChildActivity extends ActionBarActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //getWindow().requestFeature(Window.FEATURE_ACTION_BAR);
-        activity=findViewById(R.id.transitionElement);
-        //getActionBar().hide();
         setContentView(R.layout.activity_child);
+        //getWindow().requestFeature(Window.FEATURE_CONTENT_TRANSITIONS);
+        activity=findViewById(R.id.transitionElement);
 
         //final Toolbar toolbar = (Toolbar) findViewById(R.id.category_image_view);
         //toolbar.setBackgroundColor(getIntent().getIntExtra("Color",getResources().getColor(R.color.transition)));
@@ -63,9 +63,9 @@ public class ChildActivity extends ActionBarActivity {
             SharedPreferences.Editor editor= sharedpreferences.edit();
             editor.putString(theme,String.valueOf(points.getText()));
             editor.apply();
-            highscore.setText("New Highscore");
+            highscore.setText(getString(R.string.new_high_score));
         }else{
-            highscore.setText("Highscore: "+String.valueOf(getIntent().getIntExtra("Highscore",0)));
+            highscore.setText(getString(R.string.high_score)+String.valueOf(getIntent().getIntExtra("Highscore",0)));
         }
         final Button okButton=(Button)findViewById(R.id.button2);
         okButton.setOnClickListener(new View.OnClickListener() {
@@ -83,14 +83,14 @@ public class ChildActivity extends ActionBarActivity {
             @Override
             public void onClick(View v) {
                 Intent intent=new Intent(ChildActivity.this,MainActivity.class);
-                intent.putExtra("File", theme);
+                intent.putExtra("File", getIntent().getStringExtra("Name"));
                 intent.putExtra("Image", String.valueOf(imageView.getTag()));
                 intent.putExtra("Color",getIntent().getIntExtra("Color",getResources().getColor(R.color.transition)));
                 okButton.setVisibility(View.INVISIBLE);
                 v.setVisibility(View.INVISIBLE);
                 //toolbar.setVisibility(View.INVISIBLE);
                 transitionFragment.setColor(getIntent().getIntExtra("Color",getResources().getColor(R.color.transition)));
-                transitionFragment.changeText(theme);
+                transitionFragment.changeText(getIntent().getStringExtra("Name"));
                 transitionFragment.revealShape(width/2, height/2);
                 startActivity(intent);
                 ChildActivity.this.finish();

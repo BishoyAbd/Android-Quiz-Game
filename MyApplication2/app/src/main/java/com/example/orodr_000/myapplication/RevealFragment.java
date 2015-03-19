@@ -2,8 +2,6 @@ package com.example.orodr_000.myapplication;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
-import android.annotation.TargetApi;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -17,6 +15,7 @@ import android.widget.TextView;
 public class RevealFragment extends Fragment {
     TextView tv;
     View rootView;
+    View shape;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -28,6 +27,7 @@ public class RevealFragment extends Fragment {
                              Bundle savedInstanceState) {
         rootView= inflater.inflate(R.layout.fragment_reveal, container, false);
         tv=(TextView)rootView.findViewById(R.id.theme_name_tv);
+        shape=rootView.findViewById(R.id.reveal);
         return rootView;
     }
     public  void changeText(String text){
@@ -36,9 +36,8 @@ public class RevealFragment extends Fragment {
 
     }
 
-    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     public void hideShape(int startX,int startY){
-        final View shape=rootView.findViewById(R.id.reveal_container);
+        //final View shape=rootView.findViewById(R.id.reveal_container);
 
         Animator animator = ViewAnimationUtils.createCircularReveal(
                 shape,
@@ -72,16 +71,28 @@ public class RevealFragment extends Fragment {
 
 
     public int getWidth(){
-        View shape=rootView.findViewById(R.id.reveal_container);
+
         return shape.getWidth();
     }
     public void setColor(int color){
-        View shape=rootView.findViewById(R.id.reveal_container);
+        View progressbar=rootView.findViewById(R.id.progressBar2);
+        tv.setEnabled(false);
+        progressbar.setEnabled(false);
+        //View shape=rootView.findViewById(R.id.reveal_container);
+        shape.setEnabled(false);
         shape.setBackgroundColor(color);
+    }
+    public boolean isShapeVisible(){
+        if(shape.getVisibility()==View.VISIBLE){
+            return true;
+        }
+        else{
+            return false;
+        }
     }
 
     public int getHeight(){
-        View shape=rootView.findViewById(R.id.reveal_container);
+        //View shape=rootView.findViewById(R.id.reveal_container);
         return shape.getHeight();
     }
 }
