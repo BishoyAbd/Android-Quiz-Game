@@ -36,7 +36,7 @@
         android:layout_alignBottom="@+id/quiz_image"
         />
 
-    <com.example.orodr_000.myapplication.FontFitTextView
+    <com.piskovets.fantasticguessingtournament.FontFitTextView
         android:layout_width="@dimen/column_width"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceSmall"

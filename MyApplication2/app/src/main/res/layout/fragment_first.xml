@@ -1,9 +1,9 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.orodr_000.myapplication.FirstFragment"
+    tools:context="com.piskovets.fantasticguessingtournament.FirstFragment"
     android:background="#000000"
-    android:elevation="50dp"
+    android:elevation="2dp"
     android:visibility="visible">
 
     <!-- TODO: Update blank fragment layout -->
@@ -12,6 +12,6 @@
         android:id="@+id/msg"
         android:gravity="center"
         android:textColor="#ffffffff"
-        android:textSize="@dimen/fab_size_normal" />
+        android:textSize="@dimen/huge_text_size" />
 
 </FrameLayout>

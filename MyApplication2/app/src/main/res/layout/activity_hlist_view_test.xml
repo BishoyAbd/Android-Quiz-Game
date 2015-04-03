@@ -2,7 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.orodr_000.myapplication.HListViewTest">
+    tools:context="com.piskovets.fantasticguessingtournament.HListViewTest">
 
     <!--<view
         android:layout_width="wrap_content"

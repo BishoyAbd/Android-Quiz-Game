@@ -1,4 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
-<transitionSet xmlns:android="http://schemas.android.com/apk/res/android">
-    <explode/>
+<transitionSet xmlns:android="http://schemas.android.com/apk/res/android"
+    android:transitionOrdering="together">
+    <slide
+        android:duration="1000"
+        android:startDelay="900">
+        <targets>
+            <target android:targetId="@id/button2"/>
+            <target android:targetId="@id/button8"/>
+        </targets>
+    </slide>
+    <slide
+        android:duration="1000"
+        android:startDelay="900"
+        android:slideEdge="top">
+        <targets>
+            <target android:targetId="@id/highscore_tv"/>
+            <target android:targetId="@id/category_image_view"/>
+        </targets>
+    </slide>
+    <slide
+        android:startDelay="500"
+        android:slideEdge="left">
+        <targets>
+            <target android:targetId="@id/textView"/>
+        </targets>
+    </slide>
+
 </transitionSet>

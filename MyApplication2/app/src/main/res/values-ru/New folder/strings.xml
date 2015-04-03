@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Fantastic Guessing Tournament</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string name="title_activity_test">TestActivity</string>
+    <string name="title_activity_hlist_view_test">HListViewTest</string>
+    <string name="title_activity_button">ButtonActivity</string>
+    <string name="title_activity_some">SomeActivity</string>
+    <string name="high_score">Рекорд:</string>
+    <string name="new_high_score">Новый Рекорд</string>
+    <string name="timer">45</string>
+    <string name="result">Результат:</string>
+    <string name="menu_button">Меню</string>
+    <string name="replay">Еще раз?</string>
+
+</resources>

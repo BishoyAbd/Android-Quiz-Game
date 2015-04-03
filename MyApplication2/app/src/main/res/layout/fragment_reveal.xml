@@ -1,32 +1,38 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context="com.example.orodr_000.myapplication.RevealFragment"
-    android:background="@color/transition"
-    android:id="@+id/reveal">
+<io.codetail.widget.RevealFrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:wheel="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context="com.piskovets.fantasticguessingtournament.RevealFragment"
+        android:id="@+id/reveal">
 
-    <!-- TODO: Update blank fragment layout -->
-    <com.example.orodr_000.myapplication.FontFitTextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/hello_world"
-        android:layout_gravity="center"
-        android:textSize="48dp"
-        android:id="@+id/theme_name_tv"
-        android:textColor="#ffffffff"
-        android:padding="10dp"
-        android:layout_margin="10dp"
-        android:gravity="center_horizontal" />
+        <!-- TODO: Update blank fragment layout -->
+        <com.piskovets.fantasticguessingtournament.FontFitTextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/hello_world"
+            android:layout_gravity="center"
+            android:textSize="48dp"
+            android:id="@+id/theme_name_tv"
+            android:textColor="#ffffffff"
+            android:padding="10dp"
+            android:layout_margin="10dp"
+            android:gravity="center_horizontal" />
 
-    <ProgressBar
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        style="?android:attr/progressBarStyleLarge"
-        android:id="@+id/progressBar2"
-        android:layout_gravity="center"
-        android:layout_marginTop="80dp"
-        android:indeterminate="true" />
+        <com.pnikosis.materialishprogress.ProgressWheel
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            android:id="@+id/progressBar2"
+            android:layout_gravity="center"
+            android:layout_marginTop="80dp"
+            wheel:matProg_barColor="#388E3C"
+            wheel:matProg_progressIndeterminate="true"
+             />
 
 
 
-</FrameLayout>
+    </FrameLayout>
+</io.codetail.widget.RevealFrameLayout>

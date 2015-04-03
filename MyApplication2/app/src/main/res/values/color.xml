@@ -13,7 +13,8 @@
     <color name="yellow_button">#ffd600</color>
     <color name="green_button">#4CAF50</color>
     <color name="blue_button">#3f51B5</color>
-    <color name="primary_dark">#212121</color>
-    <!--<color name="primary_dark">#303F9F</color>-->
+
+    <color name="primary_dark">#303F9F</color>
+    <!--<color name="primary_dark">#212121</color>-->
     <!--<color name="background">#37474F</color>-->
 </resources>

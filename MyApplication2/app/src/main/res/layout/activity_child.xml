@@ -1,7 +1,8 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.orodr_000.myapplication.ChildActivity">
+    tools:context="com.piskovets.fantasticguessingtournament.ChildActivity"
+    android:id="@+id/transition_container">
     <!--<android.support.v7.widget.Toolbar
         android:id="@+id/category_image_view"
         android:background="@android:color/transparent"
@@ -24,7 +25,7 @@
         android:adjustViewBounds="true"
         android:layout_alignParentStart="false"
         android:layout_alignParentEnd="false"
-        android:visibility="visible"
+        android:visibility="invisible"
         android:layout_centerHorizontal="true"
 
         android:layout_above="@+id/highscore_tv" />
@@ -37,7 +38,8 @@
         android:id="@+id/highscore_tv"
         android:textSize="@dimen/large_text_size"
         android:layout_marginBottom="5dp"
-        android:layout_centerInParent="true" />
+        android:layout_centerInParent="true"
+        android:visibility="invisible" />
 
     <LinearLayout
         android:orientation="horizontal"
@@ -54,14 +56,16 @@
             android:textAppearance="?android:attr/textAppearanceLarge"
             android:text="@string/result"
             android:id="@+id/textView"
-            android:textSize="@dimen/large_text_size" />
+            android:textSize="@dimen/large_text_size"
+            android:visibility="invisible" />
 
         <TextView android:text="@string/hello_world" android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:transitionName="points"
             android:id="@+id/activity_my_points_tv"
             android:textIsSelectable="false"
-            android:textSize="@dimen/large_text_size" />
+            android:textSize="@dimen/large_text_size"
+            android:visibility="invisible" />
     </LinearLayout>
     <View
         android:id="@+id/transitionElement3"
@@ -81,7 +85,8 @@
         android:text="@string/menu_button"
         android:id="@+id/button2"
         android:layout_centerHorizontal="true"
-        android:layout_below="@+id/linlayout" />
+        android:layout_below="@+id/linlayout"
+        android:visibility="invisible" />
 
     <Button
         android:layout_width="wrap_content"
@@ -89,7 +94,8 @@
         android:text="@string/replay"
         android:id="@+id/button8"
         android:layout_below="@+id/button2"
-        android:layout_centerHorizontal="true" />
+        android:layout_centerHorizontal="true"
+        android:visibility="invisible" />
 
     <FrameLayout
         android:id="@+id/sample_content_fragment"

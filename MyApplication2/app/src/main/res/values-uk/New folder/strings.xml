@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Fantastic Guessing Tournament</string>
+    <string name="result">Результат:</string>
+    <string name="replay">Зіграти ще</string>
+    <string name="new_high_score">Новий Рекорд</string>
+    <string name="menu_button">Меню</string>
+    <string name="high_score">Рекорд: </string>
+</resources>
