@@ -89,6 +89,7 @@ public class RevealFragment extends Fragment {
     public void hideProgressBar(){
         View progressbar=rootView.findViewById(R.id.progressBar2);
         progressbar.setVisibility(View.INVISIBLE);
+        rootView.findViewById(R.id.textView2).setVisibility(View.INVISIBLE);
     }
 
 
