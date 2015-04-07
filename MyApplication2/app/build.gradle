@@ -1,4 +1,14 @@
+buildscript {
+    repositories {
+        maven { url 'https://maven.fabric.io/public' }
+    }
+
+    dependencies {
+        classpath 'io.fabric.tools:gradle:1.+'
+    }
+}
 apply plugin: 'com.android.application'
+apply plugin: 'io.fabric'
 
 android {
     compileSdkVersion 21
@@ -6,10 +16,10 @@ android {
 
     defaultConfig {
         applicationId "com.piskovets.fantasticguessingtournament"
-        minSdkVersion 17
+        minSdkVersion 14
         targetSdkVersion 21
-        versionCode 3
-        versionName "1.0.2"
+        versionCode 4
+        versionName "1.0.3"
     }
 
 }
@@ -18,6 +28,7 @@ repositories { mavenCentral()
         url "https://jitpack.io"
     }
     jcenter()
+    maven { url 'https://maven.fabric.io/public' }
 }
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
@@ -32,5 +43,8 @@ dependencies {
     compile 'com.pnikosis:materialish-progress:1.5'
     compile "com.github.andkulikov:transitions-everywhere:1.3.0"
     compile 'com.nineoldandroids:library:2.4.0'
+    compile('com.crashlytics.sdk.android:crashlytics:2.2.3@aar') {
+        transitive = true;
+    }
 
 }

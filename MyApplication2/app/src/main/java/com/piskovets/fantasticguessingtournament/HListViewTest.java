@@ -8,8 +8,6 @@ import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.graphics.Palette;
@@ -23,9 +21,13 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.crashlytics.android.Crashlytics;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+
+import io.fabric.sdk.android.Fabric;
 
 
 public class HListViewTest extends FragmentActivity {
@@ -43,6 +45,7 @@ public class HListViewTest extends FragmentActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Fabric.with(this, new Crashlytics());
         //getWindow().requestFeature(Window.FEATURE_ACTION_BAR);
         //getActionBar().hide();
         setContentView(R.layout.activity_hlist_view_test);
@@ -176,14 +179,12 @@ public class HListViewTest extends FragmentActivity {
                 intent.putExtra("Image", String.valueOf(imageview.getTag()));
                 intent.putExtra("Color", colorId);
                 intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-                ConnectivityManager connManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-                NetworkInfo mWifi = connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
-                Connectivity connectivity=new Connectivity();
-                Log.d("Connectivity", String.valueOf(connectivity.getNetworkInfo(activity)));
+
+                Log.d("Connectivity", String.valueOf(Connectivity.getNetworkInfo(activity)));
                 //NetworkInfo m3G = connManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
 
 
-                if (connectivity.isConnectedFast(activity)) {
+                if (Connectivity.isConnectedFast(activity)) {
                     // Do whatever
                     /*Animator anim =
                             ViewAnimationUtils.createCircularReveal(myView, (int) currentXPosition[0], (int) currentYPosition[0], 0, finalRadius);

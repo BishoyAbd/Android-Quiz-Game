@@ -7,6 +7,7 @@ import android.animation.ArgbEvaluator;
 import android.animation.ObjectAnimator;
 import android.animation.TypeEvaluator;
 import android.animation.ValueAnimator;
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.FragmentManager;
@@ -104,6 +105,7 @@ public class MainActivity extends ActionBarActivity {
 
 
 
+    @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -142,7 +144,11 @@ public class MainActivity extends ActionBarActivity {
         animView = findViewById(R.id.animView);
         animView.setEnabled(false);
         tickPlusDrawable = new TickPlusDrawable(getResources().getDimensionPixelSize(R.dimen.stroke_width),getResources().getColor(R.color.background),Color.parseColor("#FF5722"),Color.parseColor("#4CAF50"));
-        animView.setBackground(tickPlusDrawable);
+        if(Build.VERSION.SDK_INT<Build.VERSION_CODES.ICE_CREAM_SANDWICH){
+            animView.setBackgroundDrawable(tickPlusDrawable);
+        }else {
+            animView.setBackground(tickPlusDrawable);
+        }
 
         sharedpreferences = getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
 
@@ -241,6 +247,7 @@ public class MainActivity extends ActionBarActivity {
         if(remainingTime<0) remainingTime=0;
         showTimer(remainingTime);
     }
+    @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
     public void onGameFinish(){
         Log.d("Timer", "Timer Finished");
         var1.setEnabled(false);
@@ -250,7 +257,11 @@ public class MainActivity extends ActionBarActivity {
         image.setEnabled(false);
         activityStates = ActivityStates.GAME_OVER;
         Glide.clear(image);
-        image.setBackground(null);
+        if(Build.VERSION.SDK_INT<Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+            image.setBackgroundDrawable(null);
+        }
+        else{
+            image.setBackground(null);}
         image.setImageBitmap(null);
         var1.setText("");
         var2.setText("");
@@ -685,6 +696,7 @@ public class MainActivity extends ActionBarActivity {
         }, timeBetweenChecks);
     }
 
+    @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
     public void loadImage(){
         try {
             if (imageAnimation != null ) {
@@ -713,7 +725,11 @@ public class MainActivity extends ActionBarActivity {
                 level.setVisibility(View.INVISIBLE);
                 levelNumber.setVisibility(View.INVISIBLE);
                 clicked = false;
-                image.setBackground(null);
+                if(Build.VERSION.SDK_INT<Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+                    image.setBackgroundDrawable(null);
+                }
+                else{
+                    image.setBackground(null);}
                 image.setImageBitmap(myData.get(0).getImage());
                 var1.setText(String.valueOf(myData.get(0).getVar1()));
                 var2.setText(String.valueOf(myData.get(0).getVar2()));
@@ -916,7 +932,7 @@ public class MainActivity extends ActionBarActivity {
         myData.clear();
         switch(activityStates){
             case STARTED:
-                if(imageAnimation.isRunning()){
+                if(imageAnimation!=null && imageAnimation.isRunning()){
                     imageAnimation.stop();
                 }
                 Log.d("OnBackPressed","Animation Stopped "+ activityStates);
@@ -1046,19 +1062,11 @@ public class MainActivity extends ActionBarActivity {
 
         public void animateTick() {
             AnimatorSet set = new AnimatorSet();
-            int cx;
-            int cy;
-            cx=animView.getWidth()/2;
-            cy=0;
-            int initialRadius =  Math.max(animView.getWidth(), animView.getHeight())*2;
             isTick=true;
             isCross=false;
             isPause=false;
             isPlay=false;
-            Animator anim;
-            //anim = ViewAnimationUtils.createCircularReveal(animView, cx, cy, 0, initialRadius);
             set.playTogether(
-                    //anim,
                     ObjectAnimator.ofFloat(this, mPropertyPointAX, mBounds.left),
                     ObjectAnimator.ofFloat(this, mPropertyPointAY, mBounds.centerY()),
 
@@ -1098,20 +1106,11 @@ public class MainActivity extends ActionBarActivity {
 
         public void animateCross() {
             AnimatorSet set = new AnimatorSet();
-            int cx;
-            int cy;
-            cx=animView.getWidth()/2;
-            cy=0;
             isTick=false;
             isCross=true;
             isPause=false;
             isPlay=false;
-            int initialRadius =  Math.max(animView.getWidth(), animView.getHeight())*2;
-
-            //Animator anim;
-            //anim = ViewAnimationUtils.createCircularReveal(animView, cx, cy, 0, initialRadius);
             set.playTogether(
-                    //anim,
                     ObjectAnimator.ofFloat(this, mPropertyPointAX,(mBounds.centerX())-mBounds.centerX()/2),
                     ObjectAnimator.ofFloat(this, mPropertyPointAY, (mBounds.centerY())-mBounds.centerY()/2),
 
@@ -1152,18 +1151,10 @@ public class MainActivity extends ActionBarActivity {
 
         public void animatePause() {
             AnimatorSet set = new AnimatorSet();
-            int cx;
-            int cy;
-            cx=animView.getWidth()/2;
-            cy=animView.getHeight();
             isTick=false;
             isCross=false;
             isPause=true;
             isPlay=false;
-            int initialRadius =  Math.max(animView.getWidth(), animView.getHeight())*2;
-
-            Animator anim;
-            //anim = ViewAnimationUtils.createCircularReveal(animView, cx, cy, 0,initialRadius );
             set.playTogether(
 
                     ObjectAnimator.ofFloat(this, mPropertyPointAX, mBounds.centerX()-mBounds.centerX()/4),
@@ -1179,18 +1170,22 @@ public class MainActivity extends ActionBarActivity {
                     ObjectAnimator.ofFloat(this, mPropertyPointDY, mBounds.bottom),
 
                     ObjectAnimator.ofFloat(this, mRotationProperty, 0f, 1f),
-                    //anim,
                     ObjectAnimator.ofObject(this, mLineColorProperty, mArgbEvaluator, Color.parseColor("#3F51B5")),
                     ObjectAnimator.ofObject(this, mBackgroundColorProperty, mArgbEvaluator, mTickColor)
             );
             set.setDuration(ANIMATION_DURATION);
             set.setInterpolator(ANIMATION_INTERPOLATOR);
             set.addListener(new AnimatorListenerAdapter() {
+                @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
                 @Override
                 public void onAnimationStart(Animator animation) {
                     super.onAnimationStart(animation);
                     if(image!=null)
-                        image.setBackground(null);
+                        if(Build.VERSION.SDK_INT<Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+                            image.setBackgroundDrawable(null);
+                        }
+                        else{
+                            image.setBackground(null);}
                 }
             });
             set.start();
@@ -1207,21 +1202,12 @@ public class MainActivity extends ActionBarActivity {
 
         public void animatePlay() {
             AnimatorSet set = new AnimatorSet();
-            int cx;
-            int cy;
-            cx=animView.getWidth()/2;
-            cy=animView.getHeight();
             isTick=false;
             isCross=false;
             isPause=false;
             isPlay=true;
-            int initialRadius =  Math.max(animView.getWidth(), animView.getHeight())*2;
-
-            //Animator anim;
-            //anim = ViewAnimationUtils.createCircularReveal(animView, cx, cy, 0,initialRadius );
             set.playTogether(
 
-                    //anim,
                     ObjectAnimator.ofFloat(this, mPropertyPointAX, mBounds.centerX()-mBounds.centerX()/4),
                     ObjectAnimator.ofFloat(this, mPropertyPointAY, mBounds.top),
 

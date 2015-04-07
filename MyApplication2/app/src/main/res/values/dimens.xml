@@ -5,8 +5,10 @@
     <dimen name="new_activity_horizontal_margin">1dp</dimen>
     <dimen name="new_activity_vertical_margin">1dp</dimen>
     <dimen name="stroke_width">4dp</dimen>
-    <dimen name="column_width">153dp</dimen>
+    <dimen name="column_width">186dp</dimen>
     <dimen name="text_size">24sp</dimen>
+    <dimen name="horizontal_spacing">5dp</dimen>
+    <dimen name="vertical_spacing">5dp</dimen>
     <dimen name="small_text_size">16sp</dimen>
     <dimen name="large_text_size">30sp</dimen>
     <dimen name="background_size">50dp</dimen>

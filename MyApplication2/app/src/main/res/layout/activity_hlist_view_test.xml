@@ -22,13 +22,14 @@
         android:layout_centerVertical="true"
         android:layout_centerHorizontal="true"
         android:columnWidth="@dimen/column_width"
-        android:verticalSpacing="5dp"
+        android:verticalSpacing="@dimen/vertical_spacing"
         android:numColumns="auto_fit"
         android:background="@color/background"
         android:gravity="center"
         android:layout_marginLeft="3dp"
         android:layout_marginRight="3dp"
-        android:layout_marginTop="3dp" />
+        android:layout_marginTop="3dp"
+        android:horizontalSpacing="@dimen/horizontal_spacing" />
 
     <View
         android:id="@+id/transitionElement"
