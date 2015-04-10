@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="activity_horizontal_margin">16dp</dimen>
+    <dimen name="activity_vertical_margin">16dp</dimen>
+    <dimen name="new_activity_horizontal_margin">1dp</dimen>
+    <dimen name="new_activity_vertical_margin">1dp</dimen>
+    <dimen name="stroke_width">6dp</dimen>
+    <dimen name="column_width">232dp</dimen>
+    <dimen name="horizontal_spacing">7dp</dimen>
+    <dimen name="vertical_spacing">7dp</dimen>
+    <dimen name="text_size">26sp</dimen>
+    <dimen name="small_text_size">18sp</dimen>
+    <dimen name="large_text_size">40sp</dimen>
+    <dimen name="background_size">60dp</dimen>
+    <dimen name="huge_text_size">65sp</dimen>
+</resources>

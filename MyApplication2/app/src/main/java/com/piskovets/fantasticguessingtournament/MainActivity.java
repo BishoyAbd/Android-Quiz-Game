@@ -7,7 +7,6 @@ import android.animation.ArgbEvaluator;
 import android.animation.ObjectAnimator;
 import android.animation.TypeEvaluator;
 import android.animation.ValueAnimator;
-import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.FragmentManager;
@@ -105,7 +104,7 @@ public class MainActivity extends ActionBarActivity {
 
 
 
-    @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -144,7 +143,7 @@ public class MainActivity extends ActionBarActivity {
         animView = findViewById(R.id.animView);
         animView.setEnabled(false);
         tickPlusDrawable = new TickPlusDrawable(getResources().getDimensionPixelSize(R.dimen.stroke_width),getResources().getColor(R.color.background),Color.parseColor("#FF5722"),Color.parseColor("#4CAF50"));
-        if(Build.VERSION.SDK_INT<Build.VERSION_CODES.ICE_CREAM_SANDWICH){
+        if(Build.VERSION.SDK_INT<Build.VERSION_CODES.JELLY_BEAN){
             animView.setBackgroundDrawable(tickPlusDrawable);
         }else {
             animView.setBackground(tickPlusDrawable);
@@ -247,7 +246,7 @@ public class MainActivity extends ActionBarActivity {
         if(remainingTime<0) remainingTime=0;
         showTimer(remainingTime);
     }
-    @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
+
     public void onGameFinish(){
         Log.d("Timer", "Timer Finished");
         var1.setEnabled(false);
@@ -257,7 +256,7 @@ public class MainActivity extends ActionBarActivity {
         image.setEnabled(false);
         activityStates = ActivityStates.GAME_OVER;
         Glide.clear(image);
-        if(Build.VERSION.SDK_INT<Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+        if(Build.VERSION.SDK_INT<Build.VERSION_CODES.JELLY_BEAN) {
             image.setBackgroundDrawable(null);
         }
         else{
@@ -362,7 +361,7 @@ public class MainActivity extends ActionBarActivity {
         try{
             myData.remove(0);
         }catch(IndexOutOfBoundsException e){
-            new showImageTask().execute();
+            //new showImageTask().execute();
         }
         if(remainingTime>=1000) {
             level_number++;
@@ -696,7 +695,6 @@ public class MainActivity extends ActionBarActivity {
         }, timeBetweenChecks);
     }
 
-    @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
     public void loadImage(){
         try {
             if (imageAnimation != null ) {
@@ -725,7 +723,7 @@ public class MainActivity extends ActionBarActivity {
                 level.setVisibility(View.INVISIBLE);
                 levelNumber.setVisibility(View.INVISIBLE);
                 clicked = false;
-                if(Build.VERSION.SDK_INT<Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+                if(Build.VERSION.SDK_INT<Build.VERSION_CODES.JELLY_BEAN) {
                     image.setBackgroundDrawable(null);
                 }
                 else{
@@ -1176,12 +1174,12 @@ public class MainActivity extends ActionBarActivity {
             set.setDuration(ANIMATION_DURATION);
             set.setInterpolator(ANIMATION_INTERPOLATOR);
             set.addListener(new AnimatorListenerAdapter() {
-                @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
+
                 @Override
                 public void onAnimationStart(Animator animation) {
                     super.onAnimationStart(animation);
                     if(image!=null)
-                        if(Build.VERSION.SDK_INT<Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+                        if(Build.VERSION.SDK_INT<Build.VERSION_CODES.JELLY_BEAN) {
                             image.setBackgroundDrawable(null);
                         }
                         else{
@@ -1286,9 +1284,9 @@ public class MainActivity extends ActionBarActivity {
         private PointProperty mPropertyPointDX = new XPointProperty(3);
         private PointProperty mPropertyPointDY = new YPointProperty(3);
 
-        public boolean isTick() {
-            return isTick;
-        }
+        //public boolean isTick() {
+           // return isTick;
+        //}
 
 
 
